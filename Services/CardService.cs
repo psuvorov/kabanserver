@@ -163,6 +163,7 @@ namespace KabanServer.Services
             var cardCoverPath = cardCoverFullPath.Substring(cardCoverFullPath.IndexOf(staticFilesContentDir, StringComparison.Ordinal) +
                                                     staticFilesContentDir.Length);
 
+            cardCoverPath = cardCoverPath.Replace("\\", "/");
             cardCoverPath = cardCoverPath + "?" + DateTime.Now.Ticks; 
 
             CoverImageOrientation orientation;

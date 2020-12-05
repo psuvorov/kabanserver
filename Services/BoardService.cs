@@ -109,6 +109,7 @@ namespace KabanServer.Services
             var boardWallpaperPath = boardWallpaperFullPath.Substring(boardWallpaperFullPath.IndexOf(staticFilesContentDir, StringComparison.Ordinal) +
                                                                       staticFilesContentDir.Length);
 
+            boardWallpaperPath = boardWallpaperPath.Replace("\\", "/");
             boardWallpaperPath = boardWallpaperPath + "?" + DateTime.Now.Ticks;
 
             return boardWallpaperPath;
