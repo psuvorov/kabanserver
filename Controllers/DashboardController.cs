@@ -32,7 +32,7 @@ namespace KabanServer.Controllers
             _mapper = mapper;
         }
         
-        [HttpGet("get-all-user-boards")]
+        [HttpGet("get-user-boards")]
         public IActionResult GetAllUserBoards()
         {
             var user = _userService.GetCurrentUser();
