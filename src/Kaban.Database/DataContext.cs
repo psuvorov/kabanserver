@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Security.Claims;
+using Kaban.Domain.Interfaces;
 using Kaban.Domain.Models;
 using Kaban.Domain.Models.Common;
 using Microsoft.EntityFrameworkCore;
@@ -11,13 +12,11 @@ namespace Kaban.Database
 {
     public class DataContext : DbContext
     {
-        private readonly IConfiguration _configuration;
-        // private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IStoredUser _storedUser;
 
-        public DataContext(DbContextOptions options, IConfiguration configuration = null) : base(options)
+        public DataContext(DbContextOptions options, IStoredUser storedUser) : base(options)
         {
-            _configuration = configuration;
-            // _httpContextAccessor = httpContextAccessor;
+            _storedUser = storedUser;
         }
         
         public DbSet<User> Users { get; set; }
@@ -33,18 +32,13 @@ namespace Kaban.Database
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             // connect to sql server database
-            options.UseSqlServer(_configuration.GetConnectionString("Kaban"));
+            // options.UseSqlServer(_configuration.GetConnectionString("Kaban"));
         }
 
         public override int SaveChanges()
         {
-            User storedUser = null;
-            // var userIdRaw = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            // if (userIdRaw != null)
-            // {
-            //     var userId = Guid.Parse(userIdRaw);
-            //     storedUser = Users.Find(userId);
-            // }
+            var userId = _storedUser.GetUserId();
+            var storedUser = Users.Find(userId);
             
             foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
             {

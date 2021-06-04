@@ -17,10 +17,10 @@ namespace Kaban.Database.Services
         private readonly DataContext _context;
         private readonly string _webRootPath;
 
-        public CardService(DataContext context, string webRootPath)
+        public CardService(DataContext context)
         {
             _context = context;
-            _webRootPath = webRootPath;
+            _webRootPath = "";
         }
 
         public IEnumerable<Card> GetAll()

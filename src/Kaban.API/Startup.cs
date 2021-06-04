@@ -89,6 +89,7 @@ namespace Kaban.API
             services.AddScoped<ICardService, CardService>();
             services.AddScoped<ICardCommentService, CardCommentService>();
             services.AddScoped<IListService, ListService>();
+            services.AddScoped<IStoredUser, StoredUser>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

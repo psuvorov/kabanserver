@@ -16,11 +16,11 @@ namespace Kaban.Database.Services
         private readonly IUserService _userService;
         private readonly string _webRootPath;
 
-        public BoardService(DataContext context, IUserService userService, string webRootPath)
+        public BoardService(DataContext context, IUserService userService)
         {
             _context = context;
             _userService = userService;
-            _webRootPath = webRootPath;
+            _webRootPath = "";
         }
 
 

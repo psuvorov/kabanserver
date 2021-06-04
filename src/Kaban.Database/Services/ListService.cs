@@ -14,11 +14,11 @@ namespace Kaban.Database.Services
         private readonly ICardService _cardService;
         private readonly string _webRootPath;
 
-        public ListService(DataContext context, ICardService cardService, string webRootPath)
+        public ListService(DataContext context, ICardService cardService)
         {
             _context = context;
             _cardService = cardService;
-            _webRootPath = webRootPath;
+            _webRootPath = "";
         }
 
         public IEnumerable<List> GetAll()
