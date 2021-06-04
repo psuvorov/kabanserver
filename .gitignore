@@ -1,7 +1,5 @@
 bin/
 obj/
 /packages/
-/appsettings.Development.json
 .idea/
 .vs/
-appsettings.json

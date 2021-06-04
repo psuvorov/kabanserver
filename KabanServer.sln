@@ -1,6 +1,10 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kaban.UI", "src\Kaban.UI\Kaban.UI.csproj", "{FC16041B-0D81-4FF6-B2C6-BF40CAA32F90}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kaban.API", "src\Kaban.API\Kaban.API.csproj", "{FC16041B-0D81-4FF6-B2C6-BF40CAA32F90}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kaban.Database", "src\Kaban.Database\Kaban.Database.csproj", "{9DFFA811-C2DC-4BB6-837B-470A7B1FDB27}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kaban.Domain", "src\Kaban.Domain\Kaban.Domain.csproj", "{6F2F32DD-634B-4BF7-A78B-DD0A072CB276}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,5 +16,13 @@ Global
 		{FC16041B-0D81-4FF6-B2C6-BF40CAA32F90}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC16041B-0D81-4FF6-B2C6-BF40CAA32F90}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC16041B-0D81-4FF6-B2C6-BF40CAA32F90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DFFA811-C2DC-4BB6-837B-470A7B1FDB27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DFFA811-C2DC-4BB6-837B-470A7B1FDB27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DFFA811-C2DC-4BB6-837B-470A7B1FDB27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DFFA811-C2DC-4BB6-837B-470A7B1FDB27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F2F32DD-634B-4BF7-A78B-DD0A072CB276}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F2F32DD-634B-4BF7-A78B-DD0A072CB276}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F2F32DD-634B-4BF7-A78B-DD0A072CB276}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F2F32DD-634B-4BF7-A78B-DD0A072CB276}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
