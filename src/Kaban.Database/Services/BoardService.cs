@@ -14,13 +14,13 @@ namespace Kaban.Database.Services
     {
         private readonly DataContext _context;
         private readonly IUserService _userService;
-        private readonly string _webRootPath;
+        private readonly string _rootPath;
 
-        public BoardService(DataContext context, IUserService userService)
+        public BoardService(DataContext context, IUserService userService, IEnvironmentHolder environmentHolder)
         {
             _context = context;
             _userService = userService;
-            _webRootPath = "";
+            _rootPath = environmentHolder.GetRootPath();
         }
 
 
@@ -67,7 +67,7 @@ namespace Kaban.Database.Services
 
         public string GetWallpaperPath(Guid boardId)
         {
-            var boardDir = Path.Combine(_webRootPath, "board-wallpapers");
+            var boardDir = Path.Combine(_rootPath, "board-wallpapers");
             if (!Directory.Exists(boardDir))
                 return string.Empty;
             
@@ -76,7 +76,7 @@ namespace Kaban.Database.Services
             if (boardWallpaperFullPath is null)
                 return string.Empty;
             
-            var staticFilesContentDir = new DirectoryInfo(_webRootPath).Name;
+            var staticFilesContentDir = new DirectoryInfo(_rootPath).Name;
             
             var boardWallpaperPath = boardWallpaperFullPath.Substring(boardWallpaperFullPath.IndexOf(staticFilesContentDir, StringComparison.Ordinal) +
                                                                       staticFilesContentDir.Length);
@@ -89,7 +89,7 @@ namespace Kaban.Database.Services
         
         public string GetBoardWallpaperPreviewPath(Guid boardId)
         {
-            var boardDir = Path.Combine(_webRootPath, "board-wallpapers");
+            var boardDir = Path.Combine(_rootPath, "board-wallpapers");
             if (!Directory.Exists(boardDir))
                 return string.Empty;
             
@@ -98,7 +98,7 @@ namespace Kaban.Database.Services
             if (boardWallpaperPreviewFullPath is null)
                 return string.Empty;
             
-            var staticFilesContentDir = new DirectoryInfo(_webRootPath).Name;
+            var staticFilesContentDir = new DirectoryInfo(_rootPath).Name;
             
             var boardWallpaperPreviewPath = boardWallpaperPreviewFullPath.Substring(boardWallpaperPreviewFullPath.IndexOf(staticFilesContentDir, StringComparison.Ordinal) +
                                                                       staticFilesContentDir.Length);
@@ -138,7 +138,7 @@ namespace Kaban.Database.Services
         
         public void SetBoardWallpaper(Stream formFile, Guid boardId)
         {
-            var targetPath = Path.Combine(_webRootPath, "board-wallpapers");
+            var targetPath = Path.Combine(_rootPath, "board-wallpapers");
 
             var boardWallpapersDir = Directory.CreateDirectory(targetPath);
 

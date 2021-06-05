@@ -38,6 +38,7 @@ namespace Kaban.Database
         public override int SaveChanges()
         {
             var userId = _storedUser.GetUserId();
+            
             var storedUser = Users.Find(userId);
             
             foreach (var entry in ChangeTracker.Entries<AuditableEntity>())

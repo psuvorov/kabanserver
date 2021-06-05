@@ -20,12 +20,10 @@ namespace Kaban.API
 {
     public class Startup
     {
-        private readonly IWebHostEnvironment _env;
         private readonly IConfiguration _configuration;
         
-        public Startup(IWebHostEnvironment env, IConfiguration configuration)
+        public Startup(IConfiguration configuration)
         {
-            _env = env;
             _configuration = configuration;
         }
 
@@ -90,6 +88,7 @@ namespace Kaban.API
             services.AddScoped<ICardCommentService, CardCommentService>();
             services.AddScoped<IListService, ListService>();
             services.AddScoped<IStoredUser, StoredUser>();
+            services.AddSingleton<IEnvironmentHolder, EnvironmentHolder>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

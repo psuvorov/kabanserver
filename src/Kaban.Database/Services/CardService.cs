@@ -15,12 +15,12 @@ namespace Kaban.Database.Services
     public class CardService : ICardService
     {
         private readonly DataContext _context;
-        private readonly string _webRootPath;
+        private readonly string _rootPath;
 
-        public CardService(DataContext context)
+        public CardService(DataContext context, IEnvironmentHolder environmentHolder)
         {
             _context = context;
-            _webRootPath = "";
+            _rootPath = environmentHolder.GetRootPath();
         }
 
         public IEnumerable<Card> GetAll()
@@ -86,7 +86,7 @@ namespace Kaban.Database.Services
         
         public void SetCardCover(Stream formFile, Guid boardId, Guid cardId)
         {
-            var targetPath = Path.Combine(_webRootPath, "card-covers", "board-" + boardId);
+            var targetPath = Path.Combine(_rootPath, "card-covers", "board-" + boardId);
 
             var boardCoversDir = Directory.CreateDirectory(targetPath);
 
@@ -126,7 +126,7 @@ namespace Kaban.Database.Services
         
         public Tuple<string, CoverImageOrientation> GetCardCoverInfo(Guid boardId, Guid cardId)
         {
-            var cardDir = Path.Combine(_webRootPath, "card-covers", "board-" + boardId);
+            var cardDir = Path.Combine(_rootPath, "card-covers", "board-" + boardId);
             if (!Directory.Exists(cardDir))
                 return new Tuple<string, CoverImageOrientation>(string.Empty, default(CoverImageOrientation));
             
@@ -135,7 +135,7 @@ namespace Kaban.Database.Services
             if (cardCoverFullPath is null)
                 return new Tuple<string, CoverImageOrientation>(string.Empty, default(CoverImageOrientation));
 
-            var staticFilesContentDir = new DirectoryInfo(_webRootPath).Name;
+            var staticFilesContentDir = new DirectoryInfo(_rootPath).Name;
 
             var cardCoverPath = cardCoverFullPath.Substring(cardCoverFullPath.IndexOf(staticFilesContentDir, StringComparison.Ordinal) +
                                                     staticFilesContentDir.Length);

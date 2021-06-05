@@ -12,13 +12,13 @@ namespace Kaban.Database.Services
     {
         private readonly DataContext _context;
         private readonly ICardService _cardService;
-        private readonly string _webRootPath;
+        private readonly string _rootPath;
 
-        public ListService(DataContext context, ICardService cardService)
+        public ListService(DataContext context, ICardService cardService, IEnvironmentHolder environmentHolder)
         {
             _context = context;
             _cardService = cardService;
-            _webRootPath = "";
+            _rootPath = environmentHolder.GetRootPath();
         }
 
         public IEnumerable<List> GetAll()
@@ -133,7 +133,7 @@ namespace Kaban.Database.Services
         
         private void CopyCardCover(Guid boardId, Guid srcCardId, Guid destCardId)
         {
-            var boardDir = Path.Combine(_webRootPath, "card-covers", "board-" + boardId);
+            var boardDir = Path.Combine(_rootPath, "card-covers", "board-" + boardId);
             if (!Directory.Exists(boardDir))
                 return;
             
