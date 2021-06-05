@@ -82,16 +82,6 @@ namespace Kaban.Database.Services
             return storedUser;
         }
         
-        // public User GetCurrentUser()
-        // {
-        //     var userIdRaw = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        //     var userId = Guid.Parse(userIdRaw);
-        //     
-        //     var storedUser = _context.Users.Find(userId);
-        //
-        //     return storedUser;
-        // }
-        
         public void Logout()
         {
             throw new NotImplementedException();
@@ -169,6 +159,4 @@ namespace Kaban.Database.Services
             return true;
         }
     }
-
-    
 }

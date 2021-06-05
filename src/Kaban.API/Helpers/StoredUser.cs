@@ -16,7 +16,7 @@ namespace Kaban.API.Helpers
 
         public Guid GetUserId()
         {
-            var claimValue = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var claimValue = _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
             
             return claimValue is null ? Guid.Empty : Guid.Parse(claimValue);
         }

@@ -15,6 +15,7 @@ namespace Kaban.API.Controllers
     [Route("api/dashboard")]
     public class DashboardController : ControllerBase
     {
+        private readonly IStoredUser _storedUser;
         private readonly IUserService _userService;
         private readonly IBoardService _boardService;
         private readonly IListService _listService;
@@ -22,7 +23,7 @@ namespace Kaban.API.Controllers
         private readonly ICardCommentService _cardCommentService;
         private readonly IMapper _mapper;
         
-        public DashboardController(IUserService userService, IBoardService boardService, IListService listService, ICardService cardService, ICardCommentService cardCommentService, IMapper mapper)
+        public DashboardController(IUserService userService, IBoardService boardService, IListService listService, ICardService cardService, ICardCommentService cardCommentService, IMapper mapper, IStoredUser storedUser)
         {
             _userService = userService;
             _boardService = boardService;
@@ -30,13 +31,13 @@ namespace Kaban.API.Controllers
             _cardService = cardService;
             _cardCommentService = cardCommentService;
             _mapper = mapper;
+            _storedUser = storedUser;
         }
         
         [HttpGet("get-user-boards")]
         public IActionResult GetAllUserBoards()
         {
-            // var user = _userService.GetCurrentUser();
-            User user = null;
+            var user = _userService.Get(_storedUser.GetUserId());
             
             var allUserBoards = _boardService.GetAll(user);
             var boardInfoDtos = _mapper.Map<IEnumerable<BoardShortInfoDto>>(allUserBoards);
