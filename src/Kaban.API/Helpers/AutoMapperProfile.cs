@@ -1,9 +1,10 @@
 using AutoMapper;
-using Kaban.API.Dto.Boards;
-using Kaban.API.Dto.CardComments;
-using Kaban.API.Dto.Cards;
-using Kaban.API.Dto.Lists;
-using Kaban.API.Dto.Users;
+using Kaban.API.Controllers.Requests.Users;
+using Kaban.API.Controllers.Responses.Boards;
+using Kaban.API.Controllers.Responses.CardComments;
+using Kaban.API.Controllers.Responses.Cards;
+using Kaban.API.Controllers.Responses.Lists;
+using Kaban.API.Controllers.Responses.Users;
 using Kaban.Domain.Models;
 using CoverImageOrientation = Kaban.Domain.Enums.CoverImageOrientation;
 
@@ -14,9 +15,9 @@ namespace Kaban.API.Helpers
         public AutoMapperProfile()
         {
             CreateMap<User, UserDto>();
-            CreateMap<RegisterUserDto, User>();
+            CreateMap<RegisterUserRequest, User>();
             CreateMap<UpdateUserDto, User>();
-            CreateMap<User, AuthenticatedUserDto>();
+            CreateMap<User, AuthSuccessResponse>();
 
             CreateMap<Board, BoardDto>();
             CreateMap<BoardDto, Board>();

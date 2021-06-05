@@ -37,7 +37,7 @@ namespace Kaban.API
                         Email = "user1@mail.ru",
                         
                     };
-                    userService.Create(user1, "123M@aaaaaa");
+                    userService.Create(user1, "123M@aaaaaa").GetAwaiter().GetResult();
 
 
                     var board1 = new Board

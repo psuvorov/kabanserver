@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Kaban.Domain.Interfaces;
 using Kaban.Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -33,7 +34,7 @@ namespace Kaban.Database.Services
             return _context.Users.SingleOrDefault(user => user.Email == email);
         }
 
-        public User Create(User user, string password)
+        public async Task<User> Create(User user, string password)
         {
             if (user is null)
                 throw new ArgumentNullException(nameof(user));
@@ -51,13 +52,13 @@ namespace Kaban.Database.Services
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
             
-            _context.Users.Add(user);
+            await _context.Users.AddAsync(user);
             _context.SaveChanges();
             
             return user;
         }
         
-        public User Authenticate(string email, string password)
+        public async Task<User> Authenticate(string email, string password)
         {
             if (email is null)
                 throw new ArgumentNullException(nameof(email));
@@ -68,7 +69,7 @@ namespace Kaban.Database.Services
             if (string.IsNullOrWhiteSpace(password))
                 throw new ArgumentException("Password cannot be empty or whitespace only string.", nameof(password));
             
-            var storedUser = _context.Users.SingleOrDefault(x => x.Email == email);
+            var storedUser = await _context.Users.SingleOrDefaultAsync(x => x.Email == email);
             
             // check if user with this email exists
             if (storedUser is null)

@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kaban.Database", "src\Kaban
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kaban.Domain", "src\Kaban.Domain\Kaban.Domain.csproj", "{6F2F32DD-634B-4BF7-A78B-DD0A072CB276}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kaban.API.IntegrationTests", "src\Kaban.API.IntegrationTests\Kaban.API.IntegrationTests.csproj", "{45949E44-1006-4804-B43D-81B09490A074}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{6F2F32DD-634B-4BF7-A78B-DD0A072CB276}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F2F32DD-634B-4BF7-A78B-DD0A072CB276}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F2F32DD-634B-4BF7-A78B-DD0A072CB276}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45949E44-1006-4804-B43D-81B09490A074}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45949E44-1006-4804-B43D-81B09490A074}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45949E44-1006-4804-B43D-81B09490A074}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45949E44-1006-4804-B43D-81B09490A074}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Kaban.Domain.Models;
 
 namespace Kaban.Domain.Interfaces
@@ -12,9 +13,9 @@ namespace Kaban.Domain.Interfaces
 
         User Get(string email);
         
-        User Create(User user, string password);
+        Task<User> Create(User user, string password);
 
-        User Authenticate(string email, string password);
+        Task<User> Authenticate(string email, string password);
 
         // User GetCurrentUser();
 

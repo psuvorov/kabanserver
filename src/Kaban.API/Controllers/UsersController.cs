@@ -2,13 +2,14 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using AutoMapper;
-using Kaban.API.Dto.Users;
+using Kaban.API.Controllers.Requests.Users;
+using Kaban.API.Controllers.Responses.Users;
 using Kaban.API.Helpers;
 using Kaban.Domain.Interfaces;
 using Kaban.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -17,7 +18,6 @@ namespace Kaban.API.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/users")]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -32,10 +32,10 @@ namespace Kaban.API.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("authenticate-user")]
-        public IActionResult Authenticate([FromBody]AuthenticateDto authenticateDto)
+        [HttpPost(ApiRoutes.Users.AuthenticateUser)]
+        public async Task<IActionResult> Authenticate([FromBody]AuthenticateRequest request)
         {
-            var currentUser = _userService.Authenticate(authenticateDto.Email, authenticateDto.Password);
+            var currentUser = await _userService.Authenticate(request.Email, request.Password);
             if (currentUser is null)
                 return BadRequest(new { message = "Email or password is incorrect" });
             
@@ -54,32 +54,34 @@ namespace Kaban.API.Controllers
             var securityToken = tokenHandler.CreateToken(tokenDescriptor);
             var serializedToken = tokenHandler.WriteToken(securityToken);
 
-            var authenticatedUserDto = _mapper.Map<AuthenticatedUserDto>(currentUser);
-            authenticatedUserDto.Token = serializedToken;
+            var authSuccessResponse = _mapper.Map<AuthSuccessResponse>(currentUser);
+            authSuccessResponse.Token = serializedToken;
 
             // return basic user info and authentication token
-            return Ok(authenticatedUserDto);
+            return Ok(authSuccessResponse);
         }
 
         [AllowAnonymous]
-        [HttpPost("register-user")]
-        public IActionResult Register([FromBody] RegisterUserDto registerDto)
+        [HttpPost(ApiRoutes.Users.RegisterUser)]
+        public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
         {
-            // map model to entity
-            var user = _mapper.Map<User>(registerDto);
+            var user = _mapper.Map<User>(request);
 
             try
             {
-                var createdUser = _userService.Create(user, registerDto.Password);
+                var createdUser = await _userService.Create(user, request.Password);
 
-                var res = new ObjectResult(new { userId = createdUser.Id });
-                res.StatusCode = StatusCodes.Status201Created;
-
-                return res;
+                return Ok(new RegisterSuccessResponse
+                {
+                    UserId = createdUser.Id
+                });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new RegisterFailureResponse
+                {
+                    Message = ex.Message
+                });
             }
         }
 
@@ -89,6 +91,5 @@ namespace Kaban.API.Controllers
         {
             return Ok("Okkk");
         }
-        
     }
 }

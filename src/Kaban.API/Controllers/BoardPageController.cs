@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using AutoMapper;
-using Kaban.API.Dto.Boards;
-using Kaban.API.Dto.CardComments;
-using Kaban.API.Dto.Cards;
-using Kaban.API.Dto.Lists;
+using Kaban.API.Controllers.Responses.Boards;
+using Kaban.API.Controllers.Responses.CardComments;
+using Kaban.API.Controllers.Responses.Cards;
+using Kaban.API.Controllers.Responses.Lists;
 using Kaban.Domain.Interfaces;
 using Kaban.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -15,7 +15,6 @@ namespace Kaban.API.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/boardpage")]
     public class BoardPageController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -35,7 +34,9 @@ namespace Kaban.API.Controllers
             _mapper = mapper;
         }
         
-        [HttpGet("get-board")]
+        // TODO: break up this fatty controller
+        
+        [HttpGet(ApiRoutes.BoardPage.GetBoard)]
         public IActionResult GetBoard([FromQuery] Guid boardId)
         {
             var boardEntity = _boardService.Get(boardId);
@@ -57,7 +58,7 @@ namespace Kaban.API.Controllers
             return Ok(boardDto);
         }
         
-        [HttpGet("get-list")]
+        [HttpGet(ApiRoutes.BoardPage.GetList)]
         public IActionResult GetList([FromQuery] Guid listId, [FromQuery] Guid boardId)
         {
             var listEntity = _listService.Get(listId);
@@ -73,7 +74,7 @@ namespace Kaban.API.Controllers
             return Ok(listDto);
         }
         
-        [HttpGet("get-card-details")]
+        [HttpGet(ApiRoutes.BoardPage.GetCardDetails)]
         public IActionResult GetCardDetails([FromQuery] Guid cardId, [FromQuery] Guid boardId)
         {
             var cardEntity = _cardService.Get(cardId);
@@ -87,7 +88,7 @@ namespace Kaban.API.Controllers
             return Ok(cardDetailsDto);
         }
 
-        [HttpGet("get-board-details")]
+        [HttpGet(ApiRoutes.BoardPage.GetBoardDetails)]
         public IActionResult GetBoardDetails([FromQuery] Guid boardId)
         {
             var boardEntity = _boardService.GetInfo(boardId);
@@ -115,7 +116,7 @@ namespace Kaban.API.Controllers
             return Ok(boardDetailsDto);
         }
 
-        [HttpGet("get-archived-cards")]
+        [HttpGet(ApiRoutes.BoardPage.GetArchivedCards)]
         public IActionResult GetArchivedCards([FromQuery] Guid boardId)
         {
             var archivedCards = _cardService.GetArchivedCards(boardId);
@@ -124,7 +125,7 @@ namespace Kaban.API.Controllers
             return Ok(archivedCardDtos);
         }
         
-        [HttpGet("get-archived-lists")]
+        [HttpGet(ApiRoutes.BoardPage.GetArchivedLists)]
         public IActionResult GetArchivedLists([FromQuery] Guid boardId)
         {
             var archivedLists = _listService.GetArchivedLists(boardId);
@@ -133,7 +134,7 @@ namespace Kaban.API.Controllers
             return Ok(archivedListDtos);
         }
         
-        [HttpPost("create-list")]
+        [HttpPost(ApiRoutes.BoardPage.CreateList)]
         public IActionResult CreateList([FromBody] CreateListDto createListDto)
         {
             var list = _mapper.Map<List>(createListDto);
@@ -153,7 +154,7 @@ namespace Kaban.API.Controllers
             }
         }
         
-        [HttpPost("copy-list")]
+        [HttpPost(ApiRoutes.BoardPage.CopyList)]
         public IActionResult CopyList([FromBody] CopyListDto copyListDto)
         {
             try
@@ -172,7 +173,7 @@ namespace Kaban.API.Controllers
             }
         }
         
-        [HttpPost("create-card")]
+        [HttpPost(ApiRoutes.BoardPage.CreateCard)]
         public IActionResult CreateCard([FromBody] CreateCardDto createCardDto)
         {
             var card = _mapper.Map<Card>(createCardDto);
@@ -193,7 +194,7 @@ namespace Kaban.API.Controllers
             }
         }
         
-        [HttpPost("create-card-comment")]
+        [HttpPost(ApiRoutes.BoardPage.CreateCardComment)]
         public IActionResult CreateCardComment([FromBody] CreateCardCommentDto createCardCommentDto)
         {
             var cardComment = _mapper.Map<CardComment>(createCardCommentDto);
@@ -214,7 +215,7 @@ namespace Kaban.API.Controllers
             }
         }
 
-        [HttpPost("set-card-cover")]
+        [HttpPost(ApiRoutes.BoardPage.SetCardCover)]
         public IActionResult SetCardCover([FromForm(Name = "imageFile")] IFormFile imageFile, [FromQuery] Guid boardId, [FromQuery] Guid cardId)
         {
             try
@@ -230,7 +231,7 @@ namespace Kaban.API.Controllers
             }
         }
         
-        [HttpPost("set-board-wallpaper")]
+        [HttpPost(ApiRoutes.BoardPage.SetBoardWallpaper)]
         public IActionResult SetBoardWallpaper([FromForm(Name = "imageFile")] IFormFile imageFile, [FromQuery] Guid boardId)
         {
             try
@@ -246,7 +247,7 @@ namespace Kaban.API.Controllers
             }
         }
         
-        [HttpPut("update-board-info")]
+        [HttpPut(ApiRoutes.BoardPage.UpdateBoardInfo)]
         public IActionResult UpdateBoardInfo([FromBody] UpdateBoardDto updateBoardDto)
         {
             try
@@ -266,7 +267,7 @@ namespace Kaban.API.Controllers
             }
         }
         
-        [HttpPut("update-list")]
+        [HttpPut(ApiRoutes.BoardPage.UpdateList)]
         public IActionResult UpdateList([FromBody] UpdateListDto updateListDto)
         {
             try
@@ -303,7 +304,7 @@ namespace Kaban.API.Controllers
             }
         }
         
-        [HttpPut("update-card")]
+        [HttpPut(ApiRoutes.BoardPage.UpdateCard)]
         public IActionResult UpdateCard([FromBody] UpdateCardDto updateCardDto)
         {
             try
@@ -332,7 +333,7 @@ namespace Kaban.API.Controllers
             }
         }
         
-        [HttpPut("renumber-all-lists")]
+        [HttpPut(ApiRoutes.BoardPage.RenumberAllLists)]
         public IActionResult RenumberAllLists([FromQuery] Guid boardId, [FromBody] IEnumerable<RenumberListDto> renumberedLists)
         {
             try
@@ -357,7 +358,7 @@ namespace Kaban.API.Controllers
             }
         }
         
-        [HttpPut("renumber-all-cards")]
+        [HttpPut(ApiRoutes.BoardPage.RenumberAllCards)]
         public IActionResult RenumberAllCards([FromQuery] Guid boardId, [FromBody] IEnumerable<RenumberCardDto> renumberedCards)
         {
             try
@@ -380,7 +381,7 @@ namespace Kaban.API.Controllers
             }
         }
         
-        [HttpDelete("delete-board")]
+        [HttpDelete(ApiRoutes.BoardPage.DeleteBoard)]
         public IActionResult DeleteBoard([FromQuery] Guid boardId)
         {
             _boardService.Delete(boardId);
@@ -388,7 +389,7 @@ namespace Kaban.API.Controllers
             return NoContent();
         }
         
-        [HttpDelete("delete-list")]
+        [HttpDelete(ApiRoutes.BoardPage.DeleteList)]
         public IActionResult DeleteList([FromQuery] Guid listId)
         {
             _listService.Delete(listId);
@@ -396,7 +397,7 @@ namespace Kaban.API.Controllers
             return NoContent();
         }
         
-        [HttpDelete("delete-card")]
+        [HttpDelete(ApiRoutes.BoardPage.DeleteCard)]
         public IActionResult DeleteCard([FromQuery] Guid cardId)
         {
             _cardService.Delete(cardId);
@@ -404,14 +405,12 @@ namespace Kaban.API.Controllers
             return NoContent();
         }
         
-        [HttpDelete("delete-card-comment")]
+        [HttpDelete(ApiRoutes.BoardPage.DeleteCardComment)]
         public IActionResult DeleteCardComment([FromQuery] Guid cardCommentId)
         {
             _cardCommentService.Delete(cardCommentId);
             
             return NoContent();
         }
-
-       
     }
 }

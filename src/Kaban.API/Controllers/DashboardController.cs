@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using AutoMapper;
-using Kaban.API.Dto.Boards;
+using Kaban.API.Controllers.Responses.Boards;
 using Kaban.Domain.Interfaces;
 using Kaban.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -12,7 +12,6 @@ namespace Kaban.API.Controllers
 {
     [Authorize]
     [ApiController]
-    [Route("api/dashboard")]
     public class DashboardController : ControllerBase
     {
         private readonly IStoredUser _storedUser;
@@ -34,7 +33,7 @@ namespace Kaban.API.Controllers
             _storedUser = storedUser;
         }
         
-        [HttpGet("get-user-boards")]
+        [HttpGet(ApiRoutes.Dashboard.GetUserBoards)]
         public IActionResult GetAllUserBoards()
         {
             var user = _userService.Get(_storedUser.GetUserId());
@@ -51,7 +50,7 @@ namespace Kaban.API.Controllers
             return Ok(boardInfoDtos);
         }
         
-        [HttpPost("create-board")]
+        [HttpPost(ApiRoutes.Dashboard.CreateBoard)]
         public IActionResult CreateBoard([FromBody] CreateBoardDto createBoardDto)
         {
             var board = _mapper.Map<Board>(createBoardDto);
