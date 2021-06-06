@@ -1,9 +1,9 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Kaban.API.Controllers.Responses.Lists
+namespace Kaban.API.Controllers.Requests.Lists
 {
-    public class CreateListDto
+    public class CreateListRequest
     {
         [Required]
         public string Name { get; set; }

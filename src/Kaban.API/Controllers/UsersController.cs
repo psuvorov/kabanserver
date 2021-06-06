@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Kaban.API.Controllers.Requests.Users;
+using Kaban.API.Controllers.Responses;
 using Kaban.API.Controllers.Responses.Users;
 using Kaban.API.Helpers;
 using Kaban.Domain.Interfaces;
@@ -71,14 +72,14 @@ namespace Kaban.API.Controllers
             {
                 var createdUser = await _userService.Create(user, request.Password);
 
-                return Ok(new RegisterSuccessResponse
+                return Ok(new EntityCreatingSuccessResponse
                 {
-                    UserId = createdUser.Id
+                    EntityId = createdUser.Id
                 });
             }
             catch (Exception ex)
             {
-                return BadRequest(new RegisterFailureResponse
+                return BadRequest(new OperationFailureResponse
                 {
                     Message = ex.Message
                 });

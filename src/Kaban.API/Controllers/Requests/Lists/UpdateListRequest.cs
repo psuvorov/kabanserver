@@ -1,9 +1,9 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Kaban.API.Controllers.Responses.Lists
+namespace Kaban.API.Controllers.Requests.Lists
 {
-    public class UpdateListDto
+    public class UpdateListRequest
     {
         [Required]
         public Guid Id { get; set; }

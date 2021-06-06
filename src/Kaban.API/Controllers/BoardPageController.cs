@@ -1,6 +1,11 @@
 using System;
 using System.Collections.Generic;
 using AutoMapper;
+using Kaban.API.Controllers.Requests.Boards;
+using Kaban.API.Controllers.Requests.CardComments;
+using Kaban.API.Controllers.Requests.Cards;
+using Kaban.API.Controllers.Requests.Lists;
+using Kaban.API.Controllers.Responses;
 using Kaban.API.Controllers.Responses.Boards;
 using Kaban.API.Controllers.Responses.CardComments;
 using Kaban.API.Controllers.Responses.Cards;
@@ -40,7 +45,7 @@ namespace Kaban.API.Controllers
         public IActionResult GetBoard([FromQuery] Guid boardId)
         {
             var boardEntity = _boardService.Get(boardId);
-            var boardDto = _mapper.Map<BoardDto>(boardEntity);
+            var boardDto = _mapper.Map<BoardResponse>(boardEntity);
 
             foreach (var listDto in boardDto.Lists)
             {
@@ -62,7 +67,7 @@ namespace Kaban.API.Controllers
         public IActionResult GetList([FromQuery] Guid listId, [FromQuery] Guid boardId)
         {
             var listEntity = _listService.Get(listId);
-            var listDto = _mapper.Map<ListDto>(listEntity);
+            var listDto = _mapper.Map<ListResponse>(listEntity);
             
             foreach (var cardDto in listDto.Cards)
             {
@@ -80,9 +85,9 @@ namespace Kaban.API.Controllers
             var cardEntity = _cardService.Get(cardId);
 
             var cardComments = _cardCommentService.GetAll(cardEntity);
-            var cardCommentDtos = _mapper.Map<IEnumerable<CardCommentDto>>(cardComments);
+            var cardCommentDtos = _mapper.Map<IEnumerable<CardCommentResponse>>(cardComments);
 
-            var cardDetailsDto = _mapper.Map<CardDetailsDto>(cardEntity);
+            var cardDetailsDto = _mapper.Map<CardDetailsResponse>(cardEntity);
             cardDetailsDto.Comments = cardCommentDtos;
 
             return Ok(cardDetailsDto);
@@ -93,13 +98,13 @@ namespace Kaban.API.Controllers
         {
             var boardEntity = _boardService.GetInfo(boardId);
             
-            var boardDetailsDto = new BoardDetailsDto();
+            var boardDetailsDto = new BoardDetailsResponse();
             boardDetailsDto.Id = boardEntity.Id;
             boardDetailsDto.Name = boardEntity.Name;
             boardDetailsDto.Description = boardEntity.Description;
 
             var author = boardEntity.CreatedBy;
-            var boardUserDto = new BoardUserDto();
+            var boardUserDto = new BoardUserResponse();
             boardUserDto.Id = author.Id;
             boardUserDto.FirstName = author.FirstName;
             boardUserDto.LastName = author.LastName;
@@ -108,7 +113,7 @@ namespace Kaban.API.Controllers
             boardUserDto.UserPicture = "qwe";
             boardDetailsDto.Author = boardUserDto;
 
-            boardDetailsDto.Participants = new HashSet<BoardUserDto>();
+            boardDetailsDto.Participants = new HashSet<BoardUserResponse>();
 
             boardDetailsDto.Created = boardEntity.Created;
             boardDetailsDto.LastModified = boardEntity.LastModified;
@@ -120,7 +125,7 @@ namespace Kaban.API.Controllers
         public IActionResult GetArchivedCards([FromQuery] Guid boardId)
         {
             var archivedCards = _cardService.GetArchivedCards(boardId);
-            var archivedCardDtos = _mapper.Map<IEnumerable<ArchivedCardDto>>(archivedCards);
+            var archivedCardDtos = _mapper.Map<IEnumerable<ArchivedCardResponse>>(archivedCards);
 
             return Ok(archivedCardDtos);
         }
@@ -129,89 +134,75 @@ namespace Kaban.API.Controllers
         public IActionResult GetArchivedLists([FromQuery] Guid boardId)
         {
             var archivedLists = _listService.GetArchivedLists(boardId);
-            var archivedListDtos = _mapper.Map<IEnumerable<ArchivedListDto>>(archivedLists);
+            var archivedListDtos = _mapper.Map<IEnumerable<ArchivedListResponse>>(archivedLists);
 
             return Ok(archivedListDtos);
         }
         
         [HttpPost(ApiRoutes.BoardPage.CreateList)]
-        public IActionResult CreateList([FromBody] CreateListDto createListDto)
+        public IActionResult CreateList([FromBody] CreateListRequest request)
         {
-            var list = _mapper.Map<List>(createListDto);
+            var list = _mapper.Map<List>(request);
 
             try
             {
                 var createdList = _listService.Create(list);
 
-                var res = new ObjectResult(new { listId = createdList.Id });
-                res.StatusCode = StatusCodes.Status201Created;
-                
-                return res;
+                return Ok(new EntityCreatingSuccessResponse { EntityId = createdList.Id });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new OperationFailureResponse { Message = ex.Message });
             }
         }
         
         [HttpPost(ApiRoutes.BoardPage.CopyList)]
-        public IActionResult CopyList([FromBody] CopyListDto copyListDto)
+        public IActionResult CopyList([FromBody] CopyListRequest request)
         {
             try
             {
-                var srcList = _listService.Get(copyListDto.Id);
+                var srcList = _listService.Get(request.Id);
                 var copiedList = _listService.Copy(srcList);
-
-                var res = new ObjectResult(new { listId = copiedList.Id });
-                res.StatusCode = StatusCodes.Status201Created;
                 
-                return res;
+                return Ok(new EntityCreatingSuccessResponse { EntityId = copiedList.Id });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new OperationFailureResponse { Message = ex.Message });
             }
         }
         
         [HttpPost(ApiRoutes.BoardPage.CreateCard)]
-        public IActionResult CreateCard([FromBody] CreateCardDto createCardDto)
+        public IActionResult CreateCard([FromBody] CreateCardRequest request)
         {
-            var card = _mapper.Map<Card>(createCardDto);
+            var card = _mapper.Map<Card>(request);
 
             try
             {
                 var createdCard = _cardService.Create(card);
                 
-                var res = new ObjectResult(new { cardId = createdCard.Id });
-                res.StatusCode = StatusCodes.Status201Created;
-                
-                return res;
-
+                return Ok(new EntityCreatingSuccessResponse { EntityId = createdCard.Id });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new OperationFailureResponse { Message = ex.Message });
             }
         }
         
         [HttpPost(ApiRoutes.BoardPage.CreateCardComment)]
-        public IActionResult CreateCardComment([FromBody] CreateCardCommentDto createCardCommentDto)
+        public IActionResult CreateCardComment([FromBody] CreateCardCommentRequest request)
         {
-            var cardComment = _mapper.Map<CardComment>(createCardCommentDto);
+            var cardComment = _mapper.Map<CardComment>(request);
 
             try
             {
                 var createdComment = _cardCommentService.Create(cardComment);
 
-                var res = new ObjectResult(new { cardCommentId = createdComment.Id });
-                res.StatusCode = StatusCodes.Status201Created;
-                
-                return res;
-
+                return Ok(new EntityCreatingSuccessResponse { EntityId = createdComment.Id });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new OperationFailureResponse { Message = ex.Message });
             }
         }
 
@@ -223,11 +214,12 @@ namespace Kaban.API.Controllers
                 _cardService.SetCardCover(imageFile.OpenReadStream(), boardId, cardId);
                 var cardCoverInfo = _cardService.GetCardCoverInfo(boardId, cardId);
 
-                return Ok(new { coverImagePath = cardCoverInfo.Item1, orientation = cardCoverInfo.Item2 });
+                // return Ok(new { coverImagePath = cardCoverInfo.Item1, orientation = cardCoverInfo.Item2 });
+                return Ok(new SetCardCoverResponse { CoverImagePath = cardCoverInfo.Item1, ImageOrientation = _mapper.Map<CoverImageOrientationDto>(cardCoverInfo.Item2) });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new OperationFailureResponse { Message = ex.Message });
             }
         }
         
@@ -239,49 +231,49 @@ namespace Kaban.API.Controllers
                 _boardService.SetBoardWallpaper(imageFile.OpenReadStream(), boardId);
                 var wallpaperPath = _boardService.GetWallpaperPath(boardId);
 
-                return Ok(new { wallpaperPath });
+                return Ok(new SetBoardWallpaperResponse { WallpaperPath = wallpaperPath });
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new OperationFailureResponse { Message = ex.Message });
             }
         }
         
         [HttpPut(ApiRoutes.BoardPage.UpdateBoardInfo)]
-        public IActionResult UpdateBoardInfo([FromBody] UpdateBoardDto updateBoardDto)
+        public IActionResult UpdateBoardInfo([FromBody] UpdateBoardRequest request)
         {
             try
             {
-                var boardEntity = _boardService.Get(updateBoardDto.Id);
-                if (!(updateBoardDto.Name is null))
-                    boardEntity.Name = updateBoardDto.Name;
-                if (!(updateBoardDto.Description is null))
-                    boardEntity.Description = updateBoardDto.Description;
+                var boardEntity = _boardService.Get(request.Id);
+                if (!(request.Name is null))
+                    boardEntity.Name = request.Name;
+                if (!(request.Description is null))
+                    boardEntity.Description = request.Description;
                 _boardService.Update(boardEntity);
 
                 return Ok();
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message }); 
+                return BadRequest(new OperationFailureResponse { Message = ex.Message }); 
             }
         }
         
         [HttpPut(ApiRoutes.BoardPage.UpdateList)]
-        public IActionResult UpdateList([FromBody] UpdateListDto updateListDto)
+        public IActionResult UpdateList([FromBody] UpdateListRequest request)
         {
             try
             {
-                var listEntity = _listService.Get(updateListDto.Id);
-                if (!(updateListDto.Name is null))
-                    listEntity.Name = updateListDto.Name;
-                if (updateListDto.OrderNumber.HasValue)
-                    listEntity.OrderNumber = updateListDto.OrderNumber.Value;
-                if (updateListDto.IsArchived.HasValue)
+                var listEntity = _listService.Get(request.Id);
+                if (!(request.Name is null))
+                    listEntity.Name = request.Name;
+                if (request.OrderNumber.HasValue)
+                    listEntity.OrderNumber = request.OrderNumber.Value;
+                if (request.IsArchived.HasValue)
                 {
                     // TODO: archive/restore its cards
                     
-                    if (updateListDto.IsArchived.Value)
+                    if (request.IsArchived.Value)
                     {
                         // Archive card
                         listEntity.IsArchived = true;
@@ -300,27 +292,27 @@ namespace Kaban.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new OperationFailureResponse { Message = ex.Message });
             }
         }
         
         [HttpPut(ApiRoutes.BoardPage.UpdateCard)]
-        public IActionResult UpdateCard([FromBody] UpdateCardDto updateCardDto)
+        public IActionResult UpdateCard([FromBody] UpdateCardRequest request)
         {
             try
             {
-                var cardEntity = _cardService.Get(updateCardDto.Id);
-                if (!(updateCardDto.Name is null))
-                    cardEntity.Name = updateCardDto.Name;
-                if (!(updateCardDto.Description is null))
-                    cardEntity.Description = updateCardDto.Description;
-                if (updateCardDto.OrderNumber.HasValue)
-                    cardEntity.OrderNumber = updateCardDto.OrderNumber.Value;
-                if (updateCardDto.ListId.HasValue)
-                    cardEntity.ListId = updateCardDto.ListId.Value;
-                if (updateCardDto.IsArchived.HasValue)
+                var cardEntity = _cardService.Get(request.Id);
+                if (!(request.Name is null))
+                    cardEntity.Name = request.Name;
+                if (!(request.Description is null))
+                    cardEntity.Description = request.Description;
+                if (request.OrderNumber.HasValue)
+                    cardEntity.OrderNumber = request.OrderNumber.Value;
+                if (request.ListId.HasValue)
+                    cardEntity.ListId = request.ListId.Value;
+                if (request.IsArchived.HasValue)
                 {
-                    cardEntity.IsArchived = updateCardDto.IsArchived.Value;
+                    cardEntity.IsArchived = request.IsArchived.Value;
                     cardEntity.Archived = DateTime.Now;
                 }
                 _cardService.Update(cardEntity);
@@ -329,12 +321,12 @@ namespace Kaban.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new OperationFailureResponse { Message = ex.Message });
             }
         }
         
         [HttpPut(ApiRoutes.BoardPage.RenumberAllLists)]
-        public IActionResult RenumberAllLists([FromQuery] Guid boardId, [FromBody] IEnumerable<RenumberListDto> renumberedLists)
+        public IActionResult RenumberAllLists([FromQuery] Guid boardId, [FromBody] IEnumerable<RenumberListRequest> renumberedLists)
         {
             try
             {
@@ -354,12 +346,12 @@ namespace Kaban.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new OperationFailureResponse { Message = ex.Message });
             }
         }
         
         [HttpPut(ApiRoutes.BoardPage.RenumberAllCards)]
-        public IActionResult RenumberAllCards([FromQuery] Guid boardId, [FromBody] IEnumerable<RenumberCardDto> renumberedCards)
+        public IActionResult RenumberAllCards([FromQuery] Guid boardId, [FromBody] IEnumerable<RenumberCardRequest> renumberedCards)
         {
             try
             {
@@ -377,7 +369,7 @@ namespace Kaban.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return BadRequest(new OperationFailureResponse { Message = ex.Message });
             }
         }
         

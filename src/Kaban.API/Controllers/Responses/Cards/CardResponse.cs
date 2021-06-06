@@ -2,7 +2,7 @@ using System;
 
 namespace Kaban.API.Controllers.Responses.Cards
 {
-    public class CardDto
+    public class CardResponse
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

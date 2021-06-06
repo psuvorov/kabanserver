@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Kaban.API.Controllers.Requests.Users;
+using Kaban.API.Controllers.Responses;
 using Kaban.API.Controllers.Responses.Users;
 using Xunit;
 
@@ -28,7 +29,7 @@ namespace Kaban.API.IntegrationTests
             
             // Assert
             registerUser.StatusCode.Should().Be(HttpStatusCode.OK);
-            (await registerUser.Content.ReadAsAsync<RegisterSuccessResponse>()).UserId.Should().NotBeEmpty();
+            (await registerUser.Content.ReadAsAsync<EntityCreatingSuccessResponse>()).EntityId.Should().NotBeEmpty();
         }
         
         [Fact]
@@ -70,9 +71,9 @@ namespace Kaban.API.IntegrationTests
             
             // Assert
             registerUser1.StatusCode.Should().Be(HttpStatusCode.OK);
-            (await registerUser1.Content.ReadAsAsync<RegisterSuccessResponse>()).UserId.Should().NotBeEmpty();
+            (await registerUser1.Content.ReadAsAsync<EntityCreatingSuccessResponse>()).EntityId.Should().NotBeEmpty();
             registerUser2.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-            (await registerUser2.Content.ReadAsAsync<RegisterFailureResponse>()).Message.Should().NotBeEmpty();
+            (await registerUser2.Content.ReadAsAsync<OperationFailureResponse>()).Message.Should().NotBeEmpty();
         }
         
         [Fact]

@@ -4,7 +4,7 @@ using Kaban.API.Controllers.Responses.CardComments;
 
 namespace Kaban.API.Controllers.Responses.Cards
 {
-    public class CardDetailsDto
+    public class CardDetailsResponse
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
@@ -14,6 +14,6 @@ namespace Kaban.API.Controllers.Responses.Cards
         public string ListName { get; set; }
         
         // TODO: Pass here only first 10 comments. Further comments should be acquired via another endpoint (for pagination / virtual scrolling purposes)
-        public IEnumerable<CardCommentDto> Comments { get; set; } 
+        public IEnumerable<CardCommentResponse> Comments { get; set; } 
     }
 }

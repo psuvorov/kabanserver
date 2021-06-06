@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using AutoMapper;
+using Kaban.API.Controllers.Requests.Boards;
+using Kaban.API.Controllers.Responses;
 using Kaban.API.Controllers.Responses.Boards;
 using Kaban.Domain.Interfaces;
 using Kaban.Domain.Models;
@@ -39,7 +41,7 @@ namespace Kaban.API.Controllers
             var user = _userService.Get(_storedUser.GetUserId());
             
             var allUserBoards = _boardService.GetAll(user);
-            var boardInfoDtos = _mapper.Map<IEnumerable<BoardShortInfoDto>>(allUserBoards);
+            var boardInfoDtos = _mapper.Map<IEnumerable<BoardShortInfoResponse>>(allUserBoards);
 
             foreach (var boardShortInfoDto in boardInfoDtos)
             {
@@ -51,22 +53,19 @@ namespace Kaban.API.Controllers
         }
         
         [HttpPost(ApiRoutes.Dashboard.CreateBoard)]
-        public IActionResult CreateBoard([FromBody] CreateBoardDto createBoardDto)
+        public IActionResult CreateBoard([FromBody] CreateBoardRequest request)
         {
-            var board = _mapper.Map<Board>(createBoardDto);
+            var board = _mapper.Map<Board>(request);
 
             try
             {
                 var createdBoard = _boardService.Create(board);
                 
-                var res = new ObjectResult(new { boardId = createdBoard.Id });
-                res.StatusCode = StatusCodes.Status201Created;
-                
-                return res;
+                return Ok(new EntityCreatingSuccessResponse { EntityId = createdBoard.Id});
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message }); 
+                return BadRequest(new OperationFailureResponse { Message = ex.Message}); 
             }
         }
     }

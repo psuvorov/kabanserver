@@ -4,12 +4,12 @@ using Kaban.API.Controllers.Responses.Lists;
 
 namespace Kaban.API.Controllers.Responses.Boards
 {
-    public class BoardDto
+    public class BoardResponse
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public string WallpaperPath { get; set; }
-        public IEnumerable<ListDto> Lists { get; set; }
+        public IEnumerable<ListResponse> Lists { get; set; }
     }
 }

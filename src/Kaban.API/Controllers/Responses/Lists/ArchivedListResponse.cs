@@ -2,7 +2,7 @@ using System;
 
 namespace Kaban.API.Controllers.Responses.Lists
 {
-    public class ArchivedListDto
+    public class ArchivedListResponse
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

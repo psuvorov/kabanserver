@@ -1,9 +1,9 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Kaban.API.Controllers.Responses.Cards
+namespace Kaban.API.Controllers.Requests.Cards
 {
-    public class CreateCardDto
+    public class CreateCardRequest
     {
         [Required]
         public string Name { get; set; }

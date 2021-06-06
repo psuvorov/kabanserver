@@ -2,7 +2,7 @@ using System;
 
 namespace Kaban.API.Controllers.Responses.Boards
 {
-    public class BoardUserDto
+    public class BoardUserResponse
     {
         public Guid Id { get; set; }
         public string FirstName { get; set; }

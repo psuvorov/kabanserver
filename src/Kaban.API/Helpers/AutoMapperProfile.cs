@@ -1,4 +1,8 @@
 using AutoMapper;
+using Kaban.API.Controllers.Requests.Boards;
+using Kaban.API.Controllers.Requests.CardComments;
+using Kaban.API.Controllers.Requests.Cards;
+using Kaban.API.Controllers.Requests.Lists;
 using Kaban.API.Controllers.Requests.Users;
 using Kaban.API.Controllers.Responses.Boards;
 using Kaban.API.Controllers.Responses.CardComments;
@@ -14,39 +18,37 @@ namespace Kaban.API.Helpers
     {
         public AutoMapperProfile()
         {
-            CreateMap<User, UserDto>();
             CreateMap<RegisterUserRequest, User>();
-            CreateMap<UpdateUserDto, User>();
             CreateMap<User, AuthSuccessResponse>();
 
-            CreateMap<Board, BoardDto>();
-            CreateMap<BoardDto, Board>();
-            CreateMap<Board, BoardShortInfoDto>();
-            CreateMap<BoardShortInfoDto, Board>();
-            CreateMap<CreateBoardDto, Board>();
+            CreateMap<Board, BoardResponse>();
+            CreateMap<BoardResponse, Board>();
+            CreateMap<Board, BoardShortInfoResponse>();
+            CreateMap<BoardShortInfoResponse, Board>();
+            CreateMap<CreateBoardRequest, Board>();
             
-            CreateMap<List, ListDto>();
-            CreateMap<ListDto, List>();
-            CreateMap<CreateListDto, List>();
-            CreateMap<List, ArchivedListDto>();
+            CreateMap<List, ListResponse>();
+            CreateMap<ListResponse, List>();
+            CreateMap<CreateListRequest, List>();
+            CreateMap<List, ArchivedListResponse>();
 
             CreateMap<CoverImageOrientation, CoverImageOrientationDto>();
             CreateMap<CoverImageOrientationDto, CoverImageOrientation>();
-            CreateMap<Card, CardDto>();
-            CreateMap<CardDto, Card>();
-            CreateMap<CreateCardDto, Card>();
-            CreateMap<Card, CardDetailsDto>()
+            CreateMap<Card, CardResponse>();
+            CreateMap<CardResponse, Card>();
+            CreateMap<CreateCardRequest, Card>();
+            CreateMap<Card, CardDetailsResponse>()
                 .ForMember(dest => dest.ListName,
                     opt => opt.MapFrom(src => src.List.Name));
-            CreateMap<Card, ArchivedCardDto>()
+            CreateMap<Card, ArchivedCardResponse>()
                 .ForMember(dest => dest.ListName,
                     opt => opt.MapFrom(src => src.List.Name));
             
             // CreateMap<CardComment, CardCommentDto>()
             //     .ForMember(dest => dest.Username, 
             //         opt => opt.MapFrom((src => src.User.Username)));
-            CreateMap<CardCommentDto, CardComment>();
-            CreateMap<CreateCardCommentDto, CardComment>();
+            CreateMap<CardCommentResponse, CardComment>();
+            CreateMap<CreateCardCommentRequest, CardComment>();
 
 
         }
