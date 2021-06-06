@@ -98,10 +98,27 @@ namespace Kaban.API.IntegrationTests
             // Act
             var authenticateResponse = await AuthenticateAsync(request);
 
-
             // Assert
             authenticateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
             (await authenticateResponse.Content.ReadAsAsync<AuthSuccessResponse>()).Token.Should().NotBeEmpty();
+        }
+        
+        [Fact]
+        public async Task AuthenticateUser_IncorrectCredentials_ReturnsWhatBadRequest()
+        {
+            // Arrange
+            var request = new AuthenticateRequest
+            {
+                Email = "dummy email",
+                Password = "dummy password"
+            };
+
+            // Act
+            var authenticateResponse = await AuthenticateAsync(request);
+
+            // Assert
+            authenticateResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            (await authenticateResponse.Content.ReadAsAsync<OperationFailureResponse>()).Message.Should().NotBeEmpty();
         }
         
     }

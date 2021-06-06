@@ -38,7 +38,7 @@ namespace Kaban.API.Controllers
         {
             var currentUser = await _userService.Authenticate(request.Email, request.Password);
             if (currentUser is null)
-                return BadRequest(new { message = "Email or password is incorrect" });
+                return BadRequest(new OperationFailureResponse { Message = "Email or password is incorrect" });
             
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);

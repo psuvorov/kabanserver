@@ -32,7 +32,6 @@ namespace Kaban.API.IntegrationTests
                         services.AddDbContext<DataContext>(options => options.UseInMemoryDatabase("TestDb"));
                     });
                 });
-
             _serviceProvider = appFactory.Services;
             TestClient = appFactory.CreateClient();
         }
@@ -67,9 +66,31 @@ namespace Kaban.API.IntegrationTests
             return await TestClient.PostAsJsonAsync(ApiRoutes.Users.AuthenticateUser, request);
         }
 
+        protected async Task AuthenticatedRequest()
+        {
+            var registerUser = new RegisterUserRequest
+            {
+                FirstName = "user1",
+                LastName = "user1",
+                Username = "user1",
+                Email = "user1@mail.com",
+                Password = "UsEr1"
+            };
+            await RegisterUserAsync(registerUser);
+            var authRequest = new AuthenticateRequest
+            {
+                Email = registerUser.Email,
+                Password = registerUser.Password
+            };
+            var authenticateResponse = await AuthenticateAsync(authRequest);
+            var jwt = (await authenticateResponse.Content.ReadAsAsync<AuthSuccessResponse>());
+            
+            TestClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", jwt.Token);
+        }
+
         public void Dispose()
         {
-            using var serviceScope = _serviceProvider.CreateScope();
+            var serviceScope = _serviceProvider.CreateScope();
             var context = serviceScope.ServiceProvider.GetService<DataContext>();
             context.Database.EnsureDeleted();
         }
