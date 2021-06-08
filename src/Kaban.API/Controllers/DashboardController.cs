@@ -36,7 +36,7 @@ namespace Kaban.API.Controllers
         }
         
         [HttpGet(ApiRoutes.Dashboard.GetUserBoards)]
-        public IActionResult GetAllUserBoards()
+        public IActionResult GetUserBoards()
         {
             var user = _userService.Get(_storedUser.GetUserId());
             

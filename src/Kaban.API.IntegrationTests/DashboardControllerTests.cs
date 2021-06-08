@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Kaban.API.Controllers;
 using Kaban.API.Controllers.Requests.Boards;
-using Kaban.API.Controllers.Responses;
 using Kaban.API.Controllers.Responses.Boards;
 using Xunit;
 
@@ -15,7 +14,7 @@ namespace Kaban.API.IntegrationTests
     public class DashboardControllerTests : IntegrationTest
     {
         [Fact]
-        public async Task GetAllUserBoards_NoneOfBoardsExist_ReturnsEmptyEnumerable()
+        public async Task GetUserBoards_NoneOfBoardsExist_ReturnsEmptyEnumerable()
         {
             // Arrange 
             await AuthenticatedRequest();
@@ -29,7 +28,7 @@ namespace Kaban.API.IntegrationTests
         }
         
         [Fact]
-        public async Task GetAllUserBoards_NotAuthenticatedRequest_ReturnsUnauthorized()
+        public async Task GetUserBoards_NotAuthenticatedRequest_ReturnsUnauthorized()
         {
             // Act
             var getUserBoardsResponse = await TestClient.GetAsync(ApiRoutes.Dashboard.GetUserBoards);
@@ -39,7 +38,7 @@ namespace Kaban.API.IntegrationTests
         }
         
         [Fact]
-        public async Task GetAllUserBoards_BoardsExist_ReturnsCorrectNumberOfBoards()
+        public async Task GetUserBoards_BoardsExist_ReturnsCorrectNumberOfBoards()
         {
             // Arrange 
             await AuthenticatedRequest();
@@ -78,6 +77,38 @@ namespace Kaban.API.IntegrationTests
             boardShortInfoResponses.Should().NotBeEmpty();
             boardShortInfoResponses.FirstOrDefault().Should().NotBeNull();
             boardShortInfoResponses.FirstOrDefault()?.Name.Should().Be("Test Board");
+        }
+        
+        [Fact]
+        public async Task CreateBoard_EmptyBoardData_ReturnsBadRequest()
+        {
+            // Arrange 
+            await AuthenticatedRequest();
+            
+            // Act
+            var createBoardResponse = await TestClient.PostAsJsonAsync(ApiRoutes.Dashboard.CreateBoard, new CreateBoardRequest());
+
+            // Assert
+            createBoardResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+        
+        [Fact]
+        public async Task CreateBoard_AttemptToCreateDuplicate_ReturnsBadRequest()
+        {
+            // Arrange 
+            await AuthenticatedRequest();
+            var createBoardRequest = new CreateBoardRequest
+            {
+                Name = "Test Board",
+                Description = "Test Board Description"
+            };
+
+            // Act
+            await TestClient.PostAsJsonAsync(ApiRoutes.Dashboard.CreateBoard, createBoardRequest);
+            var createBoardResponse = await TestClient.PostAsJsonAsync(ApiRoutes.Dashboard.CreateBoard, createBoardRequest);
+
+            // Assert
+            createBoardResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
     }
 }
