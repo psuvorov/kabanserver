@@ -12,12 +12,12 @@ namespace Kaban.API.Controllers
         
         public static class BoardPage
         {
-            public const string GetBoard = Root + "/boardpage/get-board";
-            public const string GetList = Root + "/boardpage/get-list";
-            public const string GetBoardDetails = Root + "/boardpage/get-board-details";
-            public const string GetCardDetails = Root + "/boardpage/get-card-details";
-            public const string GetArchivedCards = Root + "/boardpage/get-archived-cards";
-            public const string GetArchivedLists = Root + "/boardpage/get-archived-lists";
+            public const string GetBoard = Root + "/boardpage/get-board/{boardId}";
+            public const string GetList = Root + "/boardpage/get-list/{boardId}/{listId}";
+            public const string GetBoardDetails = Root + "/boardpage/get-board-details/{boardId}";
+            public const string GetCardDetails = Root + "/boardpage/get-card-details/{boardId}/{cardId}";
+            public const string GetArchivedCards = Root + "/boardpage/get-archived-cards/{boardId}";
+            public const string GetArchivedLists = Root + "/boardpage/get-archived-lists/{boardId}";
             public const string CreateList = Root + "/boardpage/create-list";
             public const string CopyList = Root + "/boardpage/copy-list";
             public const string CreateCard = Root + "/boardpage/create-card";

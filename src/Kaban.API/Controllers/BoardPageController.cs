@@ -42,7 +42,7 @@ namespace Kaban.API.Controllers
         // TODO: break up this fatty controller
         
         [HttpGet(ApiRoutes.BoardPage.GetBoard)]
-        public IActionResult GetBoard([FromQuery] Guid boardId)
+        public IActionResult GetBoard([FromRoute] Guid boardId)
         {
             var boardEntity = _boardService.Get(boardId);
             var boardDto = _mapper.Map<BoardResponse>(boardEntity);
@@ -64,7 +64,7 @@ namespace Kaban.API.Controllers
         }
         
         [HttpGet(ApiRoutes.BoardPage.GetList)]
-        public IActionResult GetList([FromQuery] Guid listId, [FromQuery] Guid boardId)
+        public IActionResult GetList([FromRoute] Guid boardId, [FromRoute] Guid listId)
         {
             var listEntity = _listService.Get(listId);
             var listDto = _mapper.Map<ListResponse>(listEntity);
@@ -80,7 +80,7 @@ namespace Kaban.API.Controllers
         }
         
         [HttpGet(ApiRoutes.BoardPage.GetCardDetails)]
-        public IActionResult GetCardDetails([FromQuery] Guid cardId, [FromQuery] Guid boardId)
+        public IActionResult GetCardDetails([FromRoute] Guid boardId, [FromRoute] Guid cardId)
         {
             var cardEntity = _cardService.Get(cardId);
 
@@ -94,7 +94,7 @@ namespace Kaban.API.Controllers
         }
 
         [HttpGet(ApiRoutes.BoardPage.GetBoardDetails)]
-        public IActionResult GetBoardDetails([FromQuery] Guid boardId)
+        public IActionResult GetBoardDetails([FromRoute] Guid boardId)
         {
             var boardEntity = _boardService.GetInfo(boardId);
             
@@ -122,7 +122,7 @@ namespace Kaban.API.Controllers
         }
 
         [HttpGet(ApiRoutes.BoardPage.GetArchivedCards)]
-        public IActionResult GetArchivedCards([FromQuery] Guid boardId)
+        public IActionResult GetArchivedCards([FromRoute] Guid boardId)
         {
             var archivedCards = _cardService.GetArchivedCards(boardId);
             var archivedCardDtos = _mapper.Map<IEnumerable<ArchivedCardResponse>>(archivedCards);
@@ -131,7 +131,7 @@ namespace Kaban.API.Controllers
         }
         
         [HttpGet(ApiRoutes.BoardPage.GetArchivedLists)]
-        public IActionResult GetArchivedLists([FromQuery] Guid boardId)
+        public IActionResult GetArchivedLists([FromRoute] Guid boardId)
         {
             var archivedLists = _listService.GetArchivedLists(boardId);
             var archivedListDtos = _mapper.Map<IEnumerable<ArchivedListResponse>>(archivedLists);
