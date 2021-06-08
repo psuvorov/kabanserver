@@ -3,7 +3,11 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Kaban.API.Controllers;
+using Kaban.API.Controllers.Requests.Boards;
+using Kaban.API.Controllers.Requests.Cards;
+using Kaban.API.Controllers.Requests.Lists;
 using Kaban.API.Controllers.Requests.Users;
+using Kaban.API.Controllers.Responses;
 using Kaban.API.Controllers.Responses.Users;
 using Kaban.Database;
 using Microsoft.AspNetCore.Http;
@@ -88,11 +92,68 @@ namespace Kaban.API.IntegrationTests
             TestClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", jwt.Token);
         }
 
+        protected async Task<DummyBoard> CreateDummyBoard()
+        {
+            await AuthenticatedRequest();
+
+            var createBoardResponse = await TestClient.PostAsJsonAsync(ApiRoutes.Dashboard.CreateBoard, new CreateBoardRequest
+            {
+                Name = "Test Board",
+                Description = "Test Board Description"
+            });
+            var boardId = (await createBoardResponse.Content.ReadAsAsync<EntityCreatingSuccessResponse>()).EntityId;
+
+            var createListResponse = await TestClient.PostAsJsonAsync(ApiRoutes.BoardPage.CreateList, new CreateListRequest
+            {
+                BoardId = boardId,
+                Name = "List 1",
+                OrderNumber = 1
+            });
+            var listId = (await createListResponse.Content.ReadAsAsync<EntityCreatingSuccessResponse>()).EntityId;
+
+            var createCard1Response = await TestClient.PostAsJsonAsync(ApiRoutes.BoardPage.CreateCard, new CreateCardRequest
+            {
+                ListId = listId,
+                Name = "Card 1",
+                Description = "Card 1 description",
+                OrderNumber = 1
+            });
+            var card1 = (await createCard1Response.Content.ReadAsAsync<EntityCreatingSuccessResponse>()).EntityId;
+            
+            var createCard2Response = await TestClient.PostAsJsonAsync(ApiRoutes.BoardPage.CreateCard, new CreateCardRequest
+            {
+                ListId = listId,
+                Name = "Card 2",
+                Description = "Card 2 description",
+                OrderNumber = 2
+            });
+            var card2 = (await createCard2Response.Content.ReadAsAsync<EntityCreatingSuccessResponse>()).EntityId;
+
+            return new DummyBoard
+            {
+                BoardId = boardId,
+                ListId = listId,
+                Card1Id = card1,
+                Card2Id = card2
+            };
+        }
+
         public void Dispose()
         {
             var serviceScope = _serviceProvider.CreateScope();
             var context = serviceScope.ServiceProvider.GetService<DataContext>();
             context.Database.EnsureDeleted();
+        }
+        
+        protected class DummyBoard
+        {
+            public Guid BoardId { get; set; }
+
+            public Guid ListId { get; set; }
+            
+            public Guid Card1Id { get; set; }
+            
+            public Guid Card2Id { get; set; }
         }
     }
 }
