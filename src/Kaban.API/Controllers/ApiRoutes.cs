@@ -14,21 +14,29 @@ namespace Kaban.API.Controllers
         {
             public const string GetBoard = Root + "/boardpage/get-board/{boardId}";
             public const string GetList = Root + "/boardpage/get-list/{boardId}/{listId}";
+            
             public const string GetBoardDetails = Root + "/boardpage/get-board-details/{boardId}";
             public const string GetCardDetails = Root + "/boardpage/get-card-details/{boardId}/{cardId}";
-            public const string GetArchivedCards = Root + "/boardpage/get-archived-cards/{boardId}";
+            
             public const string GetArchivedLists = Root + "/boardpage/get-archived-lists/{boardId}";
+            public const string GetArchivedCards = Root + "/boardpage/get-archived-cards/{boardId}";
+            
             public const string CreateList = Root + "/boardpage/create-list";
-            public const string CopyList = Root + "/boardpage/copy-list";
             public const string CreateCard = Root + "/boardpage/create-card";
             public const string CreateCardComment = Root + "/boardpage/create-card-comment";
+            
+            public const string CopyList = Root + "/boardpage/copy-list";
+            
             public const string SetCardCover = Root + "/boardpage/set-card-cover";
             public const string SetBoardWallpaper = Root + "/boardpage/set-board-wallpaper";
+            
             public const string UpdateBoardInfo = Root + "/boardpage/update-board-info";
             public const string UpdateList = Root + "/boardpage/update-list";
             public const string UpdateCard = Root + "/boardpage/update-card";
+            
             public const string RenumberAllLists = Root + "/boardpage/renumber-all-lists";
             public const string RenumberAllCards = Root + "/boardpage/renumber-all-cards";
+            
             public const string DeleteBoard = Root + "/boardpage/delete-board";
             public const string DeleteList = Root + "/boardpage/delete-list";
             public const string DeleteCard = Root + "/boardpage/delete-card";
