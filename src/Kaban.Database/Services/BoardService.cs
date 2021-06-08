@@ -115,6 +115,8 @@ namespace Kaban.Database.Services
                 throw new ArgumentNullException(nameof(board));
             if (_context.Boards.Any(b => b.Name == board.Name))
                 throw new Exception($"Board with '{board.Name}' name already exists.");
+            if (string.IsNullOrEmpty(board.Name))
+                throw new Exception($"Board name must not be null or empty.");
 
             _context.Boards.Add(board);
             _context.SaveChanges();
