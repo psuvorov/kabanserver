@@ -104,7 +104,7 @@ namespace Kaban.API.IntegrationTests
         }
         
         [Fact]
-        public async Task AuthenticateUser_IncorrectCredentials_ReturnsWhatBadRequest()
+        public async Task AuthenticateUser_IncorrectCredentials_ReturnsBadRequest()
         {
             // Arrange
             var request = new AuthenticateRequest

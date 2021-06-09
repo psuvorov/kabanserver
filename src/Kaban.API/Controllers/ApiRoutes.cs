@@ -45,8 +45,8 @@ namespace Kaban.API.Controllers
 
         public static class Users
         {
-            public const string AuthenticateUser = Root + "/authenticate-user";
-            public const string RegisterUser = Root + "/register-user";
+            public const string AuthenticateUser = Root + "/users/authenticate-user";
+            public const string RegisterUser = Root + "/users/register-user";
         }
     }
 }

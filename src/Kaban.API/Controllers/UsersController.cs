@@ -34,7 +34,7 @@ namespace Kaban.API.Controllers
 
         [AllowAnonymous]
         [HttpPost(ApiRoutes.Users.AuthenticateUser)]
-        public async Task<IActionResult> Authenticate([FromBody]AuthenticateRequest request)
+        public async Task<IActionResult> Authenticate([FromBody] AuthenticateRequest request)
         {
             var currentUser = await _userService.Authenticate(request.Email, request.Password);
             if (currentUser is null)

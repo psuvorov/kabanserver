@@ -73,8 +73,7 @@ namespace Kaban.API.IntegrationTests
             boardResponse.Author.Id.Should().NotBeEmpty();
             boardResponse.Author.Email.Should().NotBeNullOrEmpty();
             boardResponse.Participants.Should().BeEmpty();
-            boardResponse.Created.Should().HaveDay(DateTime.UtcNow.Day);
-            boardResponse.Created.Should().HaveYear(DateTime.UtcNow.Year);
+            boardResponse.Created.Should().HaveYear(DateTime.UtcNow.Year); // Do not run this test on the New Year day ;)
             boardResponse.LastModified.Should().BeNull();
         }
         
