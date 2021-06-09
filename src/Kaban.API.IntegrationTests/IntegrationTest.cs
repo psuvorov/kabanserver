@@ -4,6 +4,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Kaban.API.Controllers;
 using Kaban.API.Controllers.Requests.Boards;
+using Kaban.API.Controllers.Requests.CardComments;
 using Kaban.API.Controllers.Requests.Cards;
 using Kaban.API.Controllers.Requests.Lists;
 using Kaban.API.Controllers.Requests.Users;
@@ -96,38 +97,49 @@ namespace Kaban.API.IntegrationTests
         {
             await AuthenticatedRequest();
 
-            var createBoardResponse = await TestClient.PostAsJsonAsync(ApiRoutes.Dashboard.CreateBoard, new CreateBoardRequest
-            {
-                Name = "Test Board",
-                Description = "Test Board Description"
-            });
+            var createBoardResponse = await TestClient.PostAsJsonAsync(ApiRoutes.Dashboard.CreateBoard,
+                new CreateBoardRequest
+                {
+                    Name = "Test Board",
+                    Description = "Test Board Description"
+                });
             var boardId = (await createBoardResponse.Content.ReadAsAsync<EntityCreatingSuccessResponse>()).EntityId;
 
-            var createList1Response = await TestClient.PostAsJsonAsync(ApiRoutes.BoardPage.CreateList, new CreateListRequest
-            {
-                BoardId = boardId,
-                Name = "List 1",
-                OrderNumber = 1
-            });
+            var createList1Response = await TestClient.PostAsJsonAsync(ApiRoutes.BoardPage.CreateList,
+                new CreateListRequest
+                {
+                    BoardId = boardId,
+                    Name = "List 1",
+                    OrderNumber = 1
+                });
             var list1Id = (await createList1Response.Content.ReadAsAsync<EntityCreatingSuccessResponse>()).EntityId;
-            
-            var createList2Response = await TestClient.PostAsJsonAsync(ApiRoutes.BoardPage.CreateList, new CreateListRequest
-            {
-                BoardId = boardId,
-                Name = "List 2",
-                OrderNumber = 2
-            });
+
+            var createList2Response = await TestClient.PostAsJsonAsync(ApiRoutes.BoardPage.CreateList,
+                new CreateListRequest
+                {
+                    BoardId = boardId,
+                    Name = "List 2",
+                    OrderNumber = 2
+                });
             var list2Id = (await createList2Response.Content.ReadAsAsync<EntityCreatingSuccessResponse>()).EntityId;
 
-            var createCard1Response = await TestClient.PostAsJsonAsync(ApiRoutes.BoardPage.CreateCard, new CreateCardRequest
+            var createCard1Response = await TestClient.PostAsJsonAsync(ApiRoutes.BoardPage.CreateCard,
+                new CreateCardRequest
+                {
+                    ListId = list1Id,
+                    Name = "Card 1",
+                    Description = "Card 1 description",
+                    OrderNumber = 1
+                });
+            var card1Id = (await createCard1Response.Content.ReadAsAsync<EntityCreatingSuccessResponse>()).EntityId;
+
+            var createCardComment1Response = await TestClient.PostAsJsonAsync(ApiRoutes.BoardPage.CreateCardComment, new CreateCardCommentRequest
             {
-                ListId = list1Id,
-                Name = "Card 1",
-                Description = "Card 1 description",
-                OrderNumber = 1
+                CardId = card1Id,
+                Text = "This is the test card comment"
             });
-            var card1 = (await createCard1Response.Content.ReadAsAsync<EntityCreatingSuccessResponse>()).EntityId;
-            
+            var cardComment1Id = (await createCardComment1Response.Content.ReadAsAsync<EntityCreatingSuccessResponse>()).EntityId;
+
             var createCard2Response = await TestClient.PostAsJsonAsync(ApiRoutes.BoardPage.CreateCard, new CreateCardRequest
             {
                 ListId = list1Id,
@@ -135,15 +147,16 @@ namespace Kaban.API.IntegrationTests
                 Description = "Card 2 description",
                 OrderNumber = 2
             });
-            var card2 = (await createCard2Response.Content.ReadAsAsync<EntityCreatingSuccessResponse>()).EntityId;
+            var card2Id = (await createCard2Response.Content.ReadAsAsync<EntityCreatingSuccessResponse>()).EntityId;
 
             return new DummyBoard
             {
                 BoardId = boardId,
                 List1Id = list1Id,
                 List2Id = list2Id,
-                Card1Id = card1,
-                Card2Id = card2
+                Card1Id = card1Id,
+                Card2Id = card2Id,
+                CardComment1Id = cardComment1Id
             };
         }
 
@@ -161,6 +174,7 @@ namespace Kaban.API.IntegrationTests
             public Guid List2Id { get; set; }
             public Guid Card1Id { get; set; }
             public Guid Card2Id { get; set; }
+            public Guid CardComment1Id { get; set; }
         }
     }
 }

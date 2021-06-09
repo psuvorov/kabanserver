@@ -37,10 +37,10 @@ namespace Kaban.API.Controllers
             public const string RenumberLists = Root + "/boardpage/renumber-all-lists";
             public const string RenumberCards = Root + "/boardpage/renumber-all-cards";
             
-            public const string DeleteBoard = Root + "/boardpage/delete-board";
-            public const string DeleteList = Root + "/boardpage/delete-list";
-            public const string DeleteCard = Root + "/boardpage/delete-card";
-            public const string DeleteCardComment = Root + "/boardpage/delete-card-comment";
+            public const string DeleteBoard = Root + "/boardpage/delete-board/{boardId}";
+            public const string DeleteList = Root + "/boardpage/delete-list/{listId}";
+            public const string DeleteCard = Root + "/boardpage/delete-card/{cardId}";
+            public const string DeleteCardComment = Root + "/boardpage/delete-card-comment/{cardCommentId}";
         }
 
         public static class Users

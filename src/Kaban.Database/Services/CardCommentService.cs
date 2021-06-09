@@ -52,6 +52,7 @@ namespace Kaban.Database.Services
                 return;
 
             _context.CardComments.Remove(comment);
+            _context.SaveChanges();
         }
     }
 }

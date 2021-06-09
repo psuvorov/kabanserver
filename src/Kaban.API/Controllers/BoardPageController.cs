@@ -44,39 +44,53 @@ namespace Kaban.API.Controllers
         [HttpGet(ApiRoutes.BoardPage.GetBoard)]
         public IActionResult GetBoard([FromRoute] Guid boardId)
         {
-            var boardEntity = _boardService.Get(boardId);
-            var boardDto = _mapper.Map<BoardResponse>(boardEntity);
-
-            foreach (var listDto in boardDto.Lists)
+            try
             {
+                var boardEntity = _boardService.Get(boardId);
+                var boardDto = _mapper.Map<BoardResponse>(boardEntity);
+
+                foreach (var listDto in boardDto.Lists)
+                {
+                    foreach (var cardDto in listDto.Cards)
+                    {
+                        var cardCoverInfo = _cardService.GetCardCoverInfo(boardId, cardDto.Id);
+                        cardDto.CoverImagePath = cardCoverInfo.Item1;
+                        cardDto.CoverImageOrientation = _mapper.Map<CoverImageOrientationDto>(cardCoverInfo.Item2);
+                    }
+                }
+
+                var wallpaperPath = _boardService.GetWallpaperPath(boardId);
+                boardDto.WallpaperPath = wallpaperPath;
+
+                return Ok(boardDto);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new OperationFailureResponse { Message = ex.Message });
+            }
+        }
+        
+        [HttpGet(ApiRoutes.BoardPage.GetList)]
+        public IActionResult GetList([FromRoute] Guid boardId, [FromRoute] Guid listId)
+        {
+            try
+            {
+                var listEntity = _listService.Get(listId);
+                var listDto = _mapper.Map<ListResponse>(listEntity);
+            
                 foreach (var cardDto in listDto.Cards)
                 {
                     var cardCoverInfo = _cardService.GetCardCoverInfo(boardId, cardDto.Id);
                     cardDto.CoverImagePath = cardCoverInfo.Item1;
                     cardDto.CoverImageOrientation = _mapper.Map<CoverImageOrientationDto>(cardCoverInfo.Item2);
                 }
+
+                return Ok(listDto);
             }
-
-            var wallpaperPath = _boardService.GetWallpaperPath(boardId);
-            boardDto.WallpaperPath = wallpaperPath;
-
-            return Ok(boardDto);
-        }
-        
-        [HttpGet(ApiRoutes.BoardPage.GetList)]
-        public IActionResult GetList([FromRoute] Guid boardId, [FromRoute] Guid listId)
-        {
-            var listEntity = _listService.Get(listId);
-            var listDto = _mapper.Map<ListResponse>(listEntity);
-            
-            foreach (var cardDto in listDto.Cards)
+            catch (Exception ex)
             {
-                var cardCoverInfo = _cardService.GetCardCoverInfo(boardId, cardDto.Id);
-                cardDto.CoverImagePath = cardCoverInfo.Item1;
-                cardDto.CoverImageOrientation = _mapper.Map<CoverImageOrientationDto>(cardCoverInfo.Item2);
+                return BadRequest(new OperationFailureResponse { Message = ex.Message });
             }
-
-            return Ok(listDto);
         }
         
         [HttpGet(ApiRoutes.BoardPage.GetBoardDetails)]
@@ -110,15 +124,22 @@ namespace Kaban.API.Controllers
         [HttpGet(ApiRoutes.BoardPage.GetCardDetails)]
         public IActionResult GetCardDetails([FromRoute] Guid boardId, [FromRoute] Guid cardId)
         {
-            var cardEntity = _cardService.Get(cardId);
+            try
+            {
+                var cardEntity = _cardService.Get(cardId);
 
-            var cardComments = _cardCommentService.GetAll(cardEntity);
-            var cardCommentDtos = _mapper.Map<IEnumerable<CardCommentResponse>>(cardComments);
+                var cardComments = _cardCommentService.GetAll(cardEntity);
+                var cardCommentDtos = _mapper.Map<IEnumerable<CardCommentResponse>>(cardComments);
 
-            var cardDetailsDto = _mapper.Map<CardDetailsResponse>(cardEntity);
-            cardDetailsDto.Comments = cardCommentDtos;
+                var cardDetailsDto = _mapper.Map<CardDetailsResponse>(cardEntity);
+                cardDetailsDto.Comments = cardCommentDtos;
 
-            return Ok(cardDetailsDto);
+                return Ok(cardDetailsDto);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new OperationFailureResponse { Message = ex.Message });
+            }
         }
         
         [HttpGet(ApiRoutes.BoardPage.GetArchivedLists)]

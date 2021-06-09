@@ -97,7 +97,7 @@ namespace Kaban.API.IntegrationTests
             listResponse.OrderNumber.Should().BeGreaterThan(0);
             listResponse.ListId.Should().NotBeEmpty();
             listResponse.ListName.Should().NotBeNullOrEmpty();
-            listResponse.Comments.Should().BeEmpty();
+            listResponse.Comments.Should().NotBeEmpty();
         }
 
         [Fact]
@@ -211,8 +211,7 @@ namespace Kaban.API.IntegrationTests
             var cardResponse = await getCardDetailsResponse.Content.ReadAsAsync<CardDetailsResponse>();
             cardCommentId.Should().NotBeEmpty();
             cardResponse.Comments.Should().NotBeEmpty();
-            cardResponse.Comments.FirstOrDefault()?.Id.Should().Be(cardCommentId);
-            cardResponse.Comments.FirstOrDefault()?.Text.Should().Be("This is test comment");
+            cardResponse.Comments.FirstOrDefault(x => x.Id == cardCommentId)?.Text.Should().Be("This is test comment");
         }
         
         [Fact]
@@ -296,7 +295,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
 
             // Act
-            var response = await TestClient.PutAsJsonAsync(ApiRoutes.BoardPage.UpdateList, new UpdateCardRequest
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.BoardPage.UpdateCard, new UpdateCardRequest
             {
                 CardId = dummyBoard.Card1Id,
                 Name = "New Card 1",
@@ -388,7 +387,76 @@ namespace Kaban.API.IntegrationTests
             card2Response.OrderNumber.Should().Be(20);
         }
 
+        [Fact]
+        public async Task DeleteBoard_ExistingBoard_DeletedSuccessfully()
+        {
+            // Arrange
+            var dummyBoard = await CreateDummyBoard();
+            
+            // Act
+            var deleteResponse = await TestClient.DeleteAsync(ApiRoutes.BoardPage.DeleteBoard
+                .Replace("{boardId}", dummyBoard.BoardId.ToString()));
+            
+            // Assert
+            deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            var getBoardResponse = await TestClient.GetAsync(ApiRoutes.BoardPage.GetBoard.Replace("{boardId}", dummyBoard.BoardId.ToString()));
+            getBoardResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
         
+        [Fact]
+        public async Task DeleteList_ExistingList_DeletedSuccessfully()
+        {
+            // Arrange
+            var dummyBoard = await CreateDummyBoard();
+            
+            // Act
+            var deleteResponse = await TestClient.DeleteAsync(ApiRoutes.BoardPage.DeleteList
+                .Replace("{listId}", dummyBoard.List1Id.ToString()));
+            
+            // Assert
+            deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            var getListResponse = await TestClient.GetAsync(ApiRoutes.BoardPage.GetList
+                .Replace("{boardId}", dummyBoard.BoardId.ToString())
+                .Replace("{listId}", dummyBoard.List1Id.ToString()));
+            getListResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+        
+        [Fact]
+        public async Task DeleteCard_ExistingCard_DeletedSuccessfully()
+        {
+            // Arrange
+            var dummyBoard = await CreateDummyBoard();
+            
+            // Act
+            var deleteResponse = await TestClient.DeleteAsync(ApiRoutes.BoardPage.DeleteCard
+                .Replace("{cardId}", dummyBoard.Card1Id.ToString()));
+            
+            // Assert
+            deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            var getCardDetailsResponse = await TestClient.GetAsync(ApiRoutes.BoardPage.GetCardDetails
+                .Replace("{boardId}", dummyBoard.BoardId.ToString())
+                .Replace("{cardId}", dummyBoard.Card1Id.ToString()));
+            getCardDetailsResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+        
+        [Fact]
+        public async Task DeleteCardComment_ExistingCardComment_DeletedSuccessfully()
+        {
+            // Arrange
+            var dummyBoard = await CreateDummyBoard();
+            
+            // Act
+            var deleteResponse = await TestClient.DeleteAsync(ApiRoutes.BoardPage.DeleteCardComment
+                .Replace("{cardCommentId}", dummyBoard.CardComment1Id.ToString()));
+            
+            // Assert
+            deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            var getCardDetailsResponse = await TestClient.GetAsync(ApiRoutes.BoardPage.GetCardDetails
+                .Replace("{boardId}", dummyBoard.BoardId.ToString())
+                .Replace("{cardId}", dummyBoard.Card1Id.ToString()));
+            var cardDetailsResponse = await getCardDetailsResponse.Content.ReadAsAsync<CardDetailsResponse>();
+            cardDetailsResponse.Comments.Should().BeEmpty();
+        }
         
     }
 }
