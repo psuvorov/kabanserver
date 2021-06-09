@@ -103,17 +103,25 @@ namespace Kaban.API.IntegrationTests
             });
             var boardId = (await createBoardResponse.Content.ReadAsAsync<EntityCreatingSuccessResponse>()).EntityId;
 
-            var createListResponse = await TestClient.PostAsJsonAsync(ApiRoutes.BoardPage.CreateList, new CreateListRequest
+            var createList1Response = await TestClient.PostAsJsonAsync(ApiRoutes.BoardPage.CreateList, new CreateListRequest
             {
                 BoardId = boardId,
                 Name = "List 1",
                 OrderNumber = 1
             });
-            var listId = (await createListResponse.Content.ReadAsAsync<EntityCreatingSuccessResponse>()).EntityId;
+            var list1Id = (await createList1Response.Content.ReadAsAsync<EntityCreatingSuccessResponse>()).EntityId;
+            
+            var createList2Response = await TestClient.PostAsJsonAsync(ApiRoutes.BoardPage.CreateList, new CreateListRequest
+            {
+                BoardId = boardId,
+                Name = "List 2",
+                OrderNumber = 2
+            });
+            var list2Id = (await createList2Response.Content.ReadAsAsync<EntityCreatingSuccessResponse>()).EntityId;
 
             var createCard1Response = await TestClient.PostAsJsonAsync(ApiRoutes.BoardPage.CreateCard, new CreateCardRequest
             {
-                ListId = listId,
+                ListId = list1Id,
                 Name = "Card 1",
                 Description = "Card 1 description",
                 OrderNumber = 1
@@ -122,7 +130,7 @@ namespace Kaban.API.IntegrationTests
             
             var createCard2Response = await TestClient.PostAsJsonAsync(ApiRoutes.BoardPage.CreateCard, new CreateCardRequest
             {
-                ListId = listId,
+                ListId = list1Id,
                 Name = "Card 2",
                 Description = "Card 2 description",
                 OrderNumber = 2
@@ -132,7 +140,8 @@ namespace Kaban.API.IntegrationTests
             return new DummyBoard
             {
                 BoardId = boardId,
-                ListId = listId,
+                List1Id = list1Id,
+                List2Id = list2Id,
                 Card1Id = card1,
                 Card2Id = card2
             };
@@ -148,11 +157,9 @@ namespace Kaban.API.IntegrationTests
         protected class DummyBoard
         {
             public Guid BoardId { get; set; }
-
-            public Guid ListId { get; set; }
-            
+            public Guid List1Id { get; set; }
+            public Guid List2Id { get; set; }
             public Guid Card1Id { get; set; }
-            
             public Guid Card2Id { get; set; }
         }
     }

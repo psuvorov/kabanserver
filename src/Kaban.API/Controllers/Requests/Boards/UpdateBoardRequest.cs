@@ -6,7 +6,7 @@ namespace Kaban.API.Controllers.Requests.Boards
     public class UpdateBoardRequest
     {
         [Required]
-        public Guid Id { get; set; }
+        public Guid BoardId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
     }

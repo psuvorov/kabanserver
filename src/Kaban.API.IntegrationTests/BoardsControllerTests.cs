@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Kaban.API.Controllers;
+using Kaban.API.Controllers.Requests.Boards;
+using Kaban.API.Controllers.Requests.CardComments;
 using Kaban.API.Controllers.Requests.Cards;
 using Kaban.API.Controllers.Requests.Lists;
 using Kaban.API.Controllers.Responses;
@@ -43,7 +46,7 @@ namespace Kaban.API.IntegrationTests
             // Act
             var response = await TestClient.GetAsync(ApiRoutes.BoardPage.GetList
                 .Replace("{boardId}", dummyBoard.BoardId.ToString())
-                .Replace("{listId}", dummyBoard.ListId.ToString()));
+                .Replace("{listId}", dummyBoard.List1Id.ToString()));
 
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -163,7 +166,7 @@ namespace Kaban.API.IntegrationTests
             // Act
             var response = await TestClient.PostAsJsonAsync(ApiRoutes.BoardPage.CreateCard, new CreateCardRequest
             {
-                ListId = dummyBoard.ListId,
+                ListId = dummyBoard.List1Id,
                 Name = "My New Test Card",
                 Description = "My New Test Card Description",
                 OrderNumber = 100
@@ -183,5 +186,209 @@ namespace Kaban.API.IntegrationTests
             cardResponse.OrderNumber.Should().Be(100);
             cardResponse.Comments.Should().BeEmpty();
         }
+        
+        [Fact]
+        public async Task CreateCardComment_CorrectCardData_ReturnsEntityCreatingSuccessResponse()
+        {
+            // Arrange
+            var dummyBoard = await CreateDummyBoard();
+            
+            // Act
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.BoardPage.CreateCardComment, new CreateCardCommentRequest
+            {
+                Text = "This is test comment",
+                CardId = dummyBoard.Card1Id
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var cardCommentId = (await response.Content.ReadAsAsync<EntityCreatingSuccessResponse>()).EntityId;
+
+            var getCardDetailsResponse = await TestClient.GetAsync(ApiRoutes.BoardPage.GetCardDetails
+                .Replace("{boardId}", dummyBoard.BoardId.ToString())
+                .Replace("{cardId}", dummyBoard.Card1Id.ToString()));
+
+            var cardResponse = await getCardDetailsResponse.Content.ReadAsAsync<CardDetailsResponse>();
+            cardCommentId.Should().NotBeEmpty();
+            cardResponse.Comments.Should().NotBeEmpty();
+            cardResponse.Comments.FirstOrDefault()?.Id.Should().Be(cardCommentId);
+            cardResponse.Comments.FirstOrDefault()?.Text.Should().Be("This is test comment");
+        }
+        
+        [Fact]
+        public async Task CopyList_CorrectListData_ReturnsEntityCreatingSuccessResponse()
+        {
+            // Arrange
+            var dummyBoard = await CreateDummyBoard();
+            
+            // Act
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.BoardPage.CopyList, new CopyListRequest
+            {
+                BoardId = dummyBoard.BoardId,
+                ListId = dummyBoard.List1Id
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var copiedListId = (await response.Content.ReadAsAsync<EntityCreatingSuccessResponse>()).EntityId;
+            var getListResponse = await TestClient.GetAsync(ApiRoutes.BoardPage.GetList
+                .Replace("{boardId}", dummyBoard.BoardId.ToString())
+                .Replace("{listId}", copiedListId.ToString()));
+
+            var listResponse = await getListResponse.Content.ReadAsAsync<ListResponse>();
+            listResponse.Name.Should().Be("List 1");
+            listResponse.OrderNumber.Should().Be(1);
+            listResponse.Cards.Should().NotBeEmpty();
+        }
+
+        [Fact]
+        public async Task UpdateBoardInfo_ValidUpdateInfo_ReturnsOk()
+        {
+            // Arrange
+            var dummyBoard = await CreateDummyBoard();
+
+            // Act
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.BoardPage.UpdateBoardInfo, new UpdateBoardRequest
+            {
+                BoardId = dummyBoard.BoardId,
+                Name = "Test New Board",
+                Description = "Test New Board Description"
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var getBoardResponse = await TestClient.GetAsync(ApiRoutes.BoardPage.GetBoard.Replace("{boardId}", dummyBoard.BoardId.ToString()));
+            getBoardResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var boardResponse = await getBoardResponse.Content.ReadAsAsync<BoardResponse>();
+            boardResponse.Name.Should().Be("Test New Board");
+            boardResponse.Description.Should().Be("Test New Board Description");
+        }
+        
+        [Fact]
+        public async Task UpdateList_ValidUpdateInfo_ReturnsOk()
+        {
+            // Arrange
+            var dummyBoard = await CreateDummyBoard();
+
+            // Act
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.BoardPage.UpdateList, new UpdateListRequest
+            {
+                ListId = dummyBoard.List1Id,
+                Name = "New List 1",
+                OrderNumber = 100
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var getListResponse = await TestClient.GetAsync(ApiRoutes.BoardPage.GetList
+                .Replace("{boardId}", dummyBoard.BoardId.ToString())
+                .Replace("{listId}", dummyBoard.List1Id.ToString()));
+            getListResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var listResponse = await getListResponse.Content.ReadAsAsync<ListResponse>();
+            listResponse.Name.Should().Be("New List 1");
+            listResponse.OrderNumber.Should().Be(100);
+        }
+        
+        [Fact]
+        public async Task UpdateCard_ValidUpdateInfo_ReturnsOk()
+        {
+            // Arrange
+            var dummyBoard = await CreateDummyBoard();
+
+            // Act
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.BoardPage.UpdateList, new UpdateCardRequest
+            {
+                CardId = dummyBoard.Card1Id,
+                Name = "New Card 1",
+                Description = "New Card 1 description",
+                OrderNumber = 100
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var getCardDetailsResponse = await TestClient.GetAsync(ApiRoutes.BoardPage.GetCardDetails
+                .Replace("{boardId}", dummyBoard.BoardId.ToString())
+                .Replace("{cardId}", dummyBoard.Card1Id.ToString()));
+            getCardDetailsResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var cardDetailsResponse = await getCardDetailsResponse.Content.ReadAsAsync<CardDetailsResponse>();
+            cardDetailsResponse.Name.Should().Be("New Card 1");
+            cardDetailsResponse.Description.Should().Be("New Card 1 description");
+            cardDetailsResponse.OrderNumber.Should().Be(100);
+        }
+        
+        [Fact]
+        public async Task RenumberLists_ValidUpdateInfo_CorrectUpdates()
+        {
+            // Arrange
+            var dummyBoard = await CreateDummyBoard();
+
+            // Act
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.BoardPage.RenumberLists, new List<RenumberListRequest>
+            {
+                new RenumberListRequest
+                {
+                    ListId = dummyBoard.List1Id,
+                    OrderNumber = 10
+                },
+                new RenumberListRequest
+                {
+                    ListId = dummyBoard.List2Id,
+                    OrderNumber = 20
+                }
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var getList1Response = await TestClient.GetAsync(ApiRoutes.BoardPage.GetList
+                .Replace("{boardId}", dummyBoard.BoardId.ToString())
+                .Replace("{listId}", dummyBoard.List1Id.ToString()));
+            var getList2Response = await TestClient.GetAsync(ApiRoutes.BoardPage.GetList
+                .Replace("{boardId}", dummyBoard.BoardId.ToString())
+                .Replace("{listId}", dummyBoard.List2Id.ToString()));
+
+            var list1Response = await getList1Response.Content.ReadAsAsync<ListResponse>();
+            var list2Response = await getList2Response.Content.ReadAsAsync<ListResponse>();
+            list1Response.OrderNumber.Should().Be(10);
+            list2Response.OrderNumber.Should().Be(20);
+        }
+        
+        [Fact]
+        public async Task RenumberCards_ValidUpdateInfo_CorrectUpdates()
+        {
+            // Arrange
+            var dummyBoard = await CreateDummyBoard();
+
+            // Act
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.BoardPage.RenumberCards, new List<RenumberCardRequest>
+            {
+                new RenumberCardRequest
+                {
+                    CardId = dummyBoard.Card1Id, 
+                    OrderNumber = 10
+                },
+                new RenumberCardRequest
+                {
+                    CardId = dummyBoard.Card2Id, 
+                    OrderNumber = 20
+                },
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var getCard1Response = await TestClient.GetAsync(ApiRoutes.BoardPage.GetCardDetails
+                .Replace("{boardId}", dummyBoard.BoardId.ToString())
+                .Replace("{cardId}", dummyBoard.Card1Id.ToString()));
+            var getCard2Response = await TestClient.GetAsync(ApiRoutes.BoardPage.GetCardDetails
+                .Replace("{boardId}", dummyBoard.BoardId.ToString())
+                .Replace("{cardId}", dummyBoard.Card2Id.ToString()));
+            
+            var card1Response = await getCard1Response.Content.ReadAsAsync<CardDetailsResponse>();
+            var card2Response = await getCard2Response.Content.ReadAsAsync<CardDetailsResponse>();
+            card1Response.OrderNumber.Should().Be(10);
+            card2Response.OrderNumber.Should().Be(20);
+        }
+
+        
+        
     }
 }

@@ -195,7 +195,7 @@ namespace Kaban.API.Controllers
         {
             try
             {
-                var srcList = _listService.Get(request.Id);
+                var srcList = _listService.Get(request.ListId);
                 var copiedList = _listService.Copy(srcList);
                 
                 return Ok(new EntityCreatingSuccessResponse { EntityId = copiedList.Id });
@@ -244,7 +244,7 @@ namespace Kaban.API.Controllers
         {
             try
             {
-                var boardEntity = _boardService.Get(request.Id);
+                var boardEntity = _boardService.Get(request.BoardId);
                 if (!(request.Name is null))
                     boardEntity.Name = request.Name;
                 if (!(request.Description is null))
@@ -264,7 +264,7 @@ namespace Kaban.API.Controllers
         {
             try
             {
-                var listEntity = _listService.Get(request.Id);
+                var listEntity = _listService.Get(request.ListId);
                 if (!(request.Name is null))
                     listEntity.Name = request.Name;
                 if (request.OrderNumber.HasValue)
@@ -301,7 +301,7 @@ namespace Kaban.API.Controllers
         {
             try
             {
-                var cardEntity = _cardService.Get(request.Id);
+                var cardEntity = _cardService.Get(request.CardId);
                 if (!(request.Name is null))
                     cardEntity.Name = request.Name;
                 if (!(request.Description is null))
@@ -325,16 +325,16 @@ namespace Kaban.API.Controllers
             }
         }
         
-        [HttpPut(ApiRoutes.BoardPage.RenumberAllLists)]
-        public IActionResult RenumberAllLists([FromQuery] Guid boardId, [FromBody] IEnumerable<RenumberListRequest> renumberedLists)
+        [HttpPut(ApiRoutes.BoardPage.RenumberLists)]
+        public IActionResult RenumberLists([FromQuery] Guid boardId, [FromBody] IEnumerable<RenumberListRequest> renumberedLists)
         {
             try
             {
                 foreach (var renumberListDto in renumberedLists)
                 {
-                    var storedList = _listService.Get(renumberListDto.Id);
+                    var storedList = _listService.Get(renumberListDto.ListId);
                     if (storedList is null)
-                        return BadRequest(new { message = $"List with '{renumberListDto.Id}' id not found." });
+                        return BadRequest(new { message = $"List with '{renumberListDto.ListId}' id not found." });
                     // if (storedList.Board.Id != boardId)
                     //     return BadRequest(new { message = $"List with '{renumberListDto.Id}' id doesn't belong to board with '{boardId}'." });
                     
@@ -350,16 +350,16 @@ namespace Kaban.API.Controllers
             }
         }
         
-        [HttpPut(ApiRoutes.BoardPage.RenumberAllCards)]
-        public IActionResult RenumberAllCards([FromQuery] Guid boardId, [FromBody] IEnumerable<RenumberCardRequest> renumberedCards)
+        [HttpPut(ApiRoutes.BoardPage.RenumberCards)]
+        public IActionResult RenumberCards([FromQuery] Guid boardId, [FromBody] IEnumerable<RenumberCardRequest> renumberedCards)
         {
             try
             {
                 foreach (var renumberCardDto in renumberedCards)
                 {
-                    var storedCard = _cardService.Get(renumberCardDto.Id);
+                    var storedCard = _cardService.Get(renumberCardDto.CardId);
                     if (storedCard is null)
-                        return BadRequest(new { message = $"Card with '{renumberCardDto.Id}' id not found." });
+                        return BadRequest(new { message = $"Card with '{renumberCardDto.CardId}' id not found." });
                     // TODO: add check similar to RenumberAllLists
                     
                     storedCard.OrderNumber = renumberCardDto.OrderNumber;
@@ -374,7 +374,7 @@ namespace Kaban.API.Controllers
         }
         
         [HttpDelete(ApiRoutes.BoardPage.DeleteBoard)]
-        public IActionResult DeleteBoard([FromQuery] Guid boardId)
+        public IActionResult DeleteBoard([FromRoute] Guid boardId)
         {
             _boardService.Delete(boardId);
             
@@ -382,7 +382,7 @@ namespace Kaban.API.Controllers
         }
         
         [HttpDelete(ApiRoutes.BoardPage.DeleteList)]
-        public IActionResult DeleteList([FromQuery] Guid listId)
+        public IActionResult DeleteList([FromRoute] Guid listId)
         {
             _listService.Delete(listId);
             
@@ -390,7 +390,7 @@ namespace Kaban.API.Controllers
         }
         
         [HttpDelete(ApiRoutes.BoardPage.DeleteCard)]
-        public IActionResult DeleteCard([FromQuery] Guid cardId)
+        public IActionResult DeleteCard([FromRoute] Guid cardId)
         {
             _cardService.Delete(cardId);
             
@@ -398,7 +398,7 @@ namespace Kaban.API.Controllers
         }
         
         [HttpDelete(ApiRoutes.BoardPage.DeleteCardComment)]
-        public IActionResult DeleteCardComment([FromQuery] Guid cardCommentId)
+        public IActionResult DeleteCardComment([FromRoute] Guid cardCommentId)
         {
             _cardCommentService.Delete(cardCommentId);
             

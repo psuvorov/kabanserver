@@ -47,6 +47,8 @@ namespace Kaban.API.Helpers
             // CreateMap<CardComment, CardCommentDto>()
             //     .ForMember(dest => dest.Username, 
             //         opt => opt.MapFrom((src => src.User.Username)));
+            
+            CreateMap<CardComment, CardCommentResponse>();
             CreateMap<CardCommentResponse, CardComment>();
             CreateMap<CreateCardCommentRequest, CardComment>();
 

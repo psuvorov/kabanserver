@@ -20,7 +20,7 @@ namespace Kaban.Database.Services
             if (card is null)
                 throw new ArgumentNullException(nameof(card));
             
-            return _context.CardComments.Where(comment => comment.CardId == card.Id);
+            return _context.CardComments.Where(comment => comment.CardId == card.Id).ToList();
         }
 
         public CardComment Create(CardComment comment)

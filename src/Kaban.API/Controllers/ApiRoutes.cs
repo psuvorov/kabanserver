@@ -34,8 +34,8 @@ namespace Kaban.API.Controllers
             public const string UpdateList = Root + "/boardpage/update-list";
             public const string UpdateCard = Root + "/boardpage/update-card";
             
-            public const string RenumberAllLists = Root + "/boardpage/renumber-all-lists";
-            public const string RenumberAllCards = Root + "/boardpage/renumber-all-cards";
+            public const string RenumberLists = Root + "/boardpage/renumber-all-lists";
+            public const string RenumberCards = Root + "/boardpage/renumber-all-cards";
             
             public const string DeleteBoard = Root + "/boardpage/delete-board";
             public const string DeleteList = Root + "/boardpage/delete-list";

@@ -6,11 +6,11 @@ namespace Kaban.API.Controllers.Requests.Cards
     public class UpdateCardRequest
     {
         [Required]
-        public Guid Id { get; set; }
+        public Guid CardId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public int? OrderNumber { get; set; }
-        public Guid? ListId { get; set; }
+        public Guid? ListId { get; set; } // TODO: wtf??
         public bool? IsArchived { get; set; }
 
     }
