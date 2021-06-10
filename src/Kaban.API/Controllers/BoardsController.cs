@@ -106,7 +106,7 @@ namespace Kaban.API.Controllers
             try
             {
                 var boardEntity = _boardService.Get(request.BoardId);
-                if (!(request.Name is null))
+                if (!(string.IsNullOrEmpty(request.Name)))
                     boardEntity.Name = request.Name;
                 if (!(request.Description is null))
                     boardEntity.Description = request.Description;

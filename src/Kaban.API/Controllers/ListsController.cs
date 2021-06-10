@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using Kaban.API.Controllers.Requests.Lists;
 using Kaban.API.Controllers.Responses;
@@ -18,13 +19,15 @@ namespace Kaban.API.Controllers
     {
         private readonly IListService _listService;
         private readonly ICardService _cardService;
+        private readonly IBoardService _boardService;
         private readonly IMapper _mapper;
         
-        public ListsController(IListService listService, ICardService cardService, IMapper mapper)
+        public ListsController(IListService listService, ICardService cardService, IMapper mapper, IBoardService boardService)
         {
             _listService = listService;
             _cardService = cardService;
             _mapper = mapper;
+            _boardService = boardService;
         }
 
         [HttpGet(ApiRoutes.Lists.GetList)]
@@ -81,6 +84,14 @@ namespace Kaban.API.Controllers
         {
             try
             {
+                // TODO: Consider moving checks into services to make controller methods thin
+                
+                var board = _boardService.Get(request.BoardId);
+                if (board is null)
+                    throw new Exception("Board doesn't exist");
+                if (board.Lists.FirstOrDefault(x => x.Id == request.ListId) is null)
+                    throw new Exception($"Board doesn't contain a list with '{request.ListId}' Id.");
+                
                 var srcList = _listService.Get(request.ListId);
                 var copiedList = _listService.Copy(srcList);
                 
@@ -98,7 +109,7 @@ namespace Kaban.API.Controllers
             try
             {
                 var listEntity = _listService.Get(request.ListId);
-                if (!(request.Name is null))
+                if (!string.IsNullOrEmpty(request.Name))
                     listEntity.Name = request.Name;
                 if (request.OrderNumber.HasValue)
                     listEntity.OrderNumber = request.OrderNumber.Value;
@@ -110,7 +121,7 @@ namespace Kaban.API.Controllers
                     {
                         // Archive card
                         listEntity.IsArchived = true;
-                        listEntity.Archived = DateTime.Now;
+                        listEntity.Archived = DateTime.UtcNow;
                     }
                     else
                     {

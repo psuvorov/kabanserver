@@ -79,6 +79,8 @@ namespace Kaban.Database.Services
             var storedCard = _context.Cards.SingleOrDefault(x => x.Id == card.Id);
             if (storedCard is null)
                 throw new Exception("Card not found.");
+            if (storedCard.OrderNumber < 0)
+                throw new Exception("Order number should be more than zero.");
 
             _context.Cards.Update(card);
             _context.SaveChanges();
@@ -141,7 +143,7 @@ namespace Kaban.Database.Services
                                                     staticFilesContentDir.Length);
 
             cardCoverPath = cardCoverPath.Replace("\\", "/");
-            cardCoverPath = cardCoverPath + "?" + DateTime.Now.Ticks; 
+            cardCoverPath = cardCoverPath + "?" + DateTime.UtcNow.Ticks; 
 
             CoverImageOrientation orientation;
             using (var image = Image.FromFile(cardCoverFullPath))

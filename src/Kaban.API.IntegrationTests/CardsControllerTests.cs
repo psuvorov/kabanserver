@@ -145,6 +145,78 @@ namespace Kaban.API.IntegrationTests
         }
         
         [Fact]
+        public async Task UpdateCard_NullNamePropertyValue_PreviousValueStays()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var dummyBoard = await CreateDummyBoard();
+
+            // Act
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Cards.UpdateCard, new UpdateCardRequest
+            {
+                CardId = dummyBoard.Card1Id,
+                Name = null,
+                Description = "New Card 1 description",
+                OrderNumber = 100
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var getCardDetailsResponse = await TestClient.GetAsync(ApiRoutes.Cards.GetCardDetails
+                .Replace("{boardId}", dummyBoard.BoardId.ToString())
+                .Replace("{cardId}", dummyBoard.Card1Id.ToString()));
+            getCardDetailsResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var cardDetailsResponse = await getCardDetailsResponse.Content.ReadAsAsync<CardDetailsResponse>();
+            cardDetailsResponse.Name.Should().Be("Card 1");
+        }
+        
+        [Fact]
+        public async Task UpdateCard_EmptyNamePropertyValue_PreviousValueStays()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var dummyBoard = await CreateDummyBoard();
+
+            // Act
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Cards.UpdateCard, new UpdateCardRequest
+            {
+                CardId = dummyBoard.Card1Id,
+                Name = string.Empty,
+                Description = "New Card 1 description",
+                OrderNumber = 100
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var getCardDetailsResponse = await TestClient.GetAsync(ApiRoutes.Cards.GetCardDetails
+                .Replace("{boardId}", dummyBoard.BoardId.ToString())
+                .Replace("{cardId}", dummyBoard.Card1Id.ToString()));
+            getCardDetailsResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var cardDetailsResponse = await getCardDetailsResponse.Content.ReadAsAsync<CardDetailsResponse>();
+            cardDetailsResponse.Name.Should().Be("Card 1");
+        }
+        
+        [Fact]
+        public async Task UpdateCard_NegativeOrderNumber_ReturnsBadRequest()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var dummyBoard = await CreateDummyBoard();
+
+            // Act
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Cards.UpdateCard, new UpdateCardRequest
+            {
+                CardId = dummyBoard.Card1Id,
+                Name = "New Card 1",
+                Description = "New Card 1 description",
+                OrderNumber = -100
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+        
+        [Fact]
         public async Task ReorderCards_ValidUpdateInfo_CorrectUpdates()
         {
             // Arrange
@@ -179,6 +251,32 @@ namespace Kaban.API.IntegrationTests
             var card2Response = await getCard2Response.Content.ReadAsAsync<CardDetailsResponse>();
             card1Response.OrderNumber.Should().Be(10);
             card2Response.OrderNumber.Should().Be(20);
+        }
+        
+        [Fact]
+        public async Task ReorderCards_NegativeOrderNumber_ReturnsBadRequest()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var dummyBoard = await CreateDummyBoard();
+
+            // Act
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Cards.ReorderCards, new List<ReorderCardRequest>
+            {
+                new ReorderCardRequest
+                {
+                    CardId = dummyBoard.Card1Id, 
+                    OrderNumber = -10
+                },
+                new ReorderCardRequest
+                {
+                    CardId = dummyBoard.Card2Id, 
+                    OrderNumber = -20
+                },
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
         
         [Fact]

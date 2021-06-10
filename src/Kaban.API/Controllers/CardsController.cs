@@ -115,7 +115,7 @@ namespace Kaban.API.Controllers
             try
             {
                 var cardEntity = _cardService.Get(request.CardId);
-                if (!(request.Name is null))
+                if (!(string.IsNullOrEmpty(request.Name)))
                     cardEntity.Name = request.Name;
                 if (!(request.Description is null))
                     cardEntity.Description = request.Description;
@@ -126,7 +126,7 @@ namespace Kaban.API.Controllers
                 if (request.IsArchived.HasValue)
                 {
                     cardEntity.IsArchived = request.IsArchived.Value;
-                    cardEntity.Archived = DateTime.Now;
+                    cardEntity.Archived = DateTime.UtcNow;
                 }
                 _cardService.Update(cardEntity);
                 

@@ -83,6 +83,52 @@ namespace Kaban.API.IntegrationTests
             boardResponse.Name.Should().Be("Test New Board");
             boardResponse.Description.Should().Be("Test New Board Description");
         }
+        
+        [Fact]
+        public async Task UpdateBoardInfo_NullNamePropertyValue_PreviousValueStays()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var dummyBoard = await CreateDummyBoard();
+
+            // Act
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Boards.UpdateBoardInfo, new UpdateBoardRequest
+            {
+                BoardId = dummyBoard.BoardId,
+                Name = null,
+                Description = "Test New Board Description"
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var getBoardResponse = await TestClient.GetAsync(ApiRoutes.Boards.GetBoard.Replace("{boardId}", dummyBoard.BoardId.ToString()));
+            getBoardResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var boardResponse = await getBoardResponse.Content.ReadAsAsync<BoardResponse>();
+            boardResponse.Name.Should().Be("Test Board");
+        }
+        
+        [Fact]
+        public async Task UpdateBoardInfo_EmptyNamePropertyValue_PreviousValueStays()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var dummyBoard = await CreateDummyBoard();
+
+            // Act
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Boards.UpdateBoardInfo, new UpdateBoardRequest
+            {
+                BoardId = dummyBoard.BoardId,
+                Name = string.Empty,
+                Description = "Test New Board Description"
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var getBoardResponse = await TestClient.GetAsync(ApiRoutes.Boards.GetBoard.Replace("{boardId}", dummyBoard.BoardId.ToString()));
+            getBoardResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var boardResponse = await getBoardResponse.Content.ReadAsAsync<BoardResponse>();
+            boardResponse.Name.Should().Be("Test Board");
+        }
 
         [Fact]
         public async Task DeleteBoard_ExistingBoard_DeletedSuccessfully()

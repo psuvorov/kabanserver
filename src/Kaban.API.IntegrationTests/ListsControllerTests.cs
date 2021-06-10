@@ -106,6 +106,61 @@ namespace Kaban.API.IntegrationTests
         }
         
         [Fact]
+        public async Task CopyList_NonExistingBoard_ReturnsBadRequest()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var dummyBoard = await CreateDummyBoard();
+            
+            // Act
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Lists.CopyList, new CopyListRequest
+            {
+                BoardId = Guid.NewGuid(),
+                ListId = dummyBoard.List1Id
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+        
+        [Fact]
+        public async Task CopyList_NonExistingList_ReturnsBadRequest()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var dummyBoard = await CreateDummyBoard();
+            
+            // Act
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Lists.CopyList, new CopyListRequest
+            {
+                BoardId = dummyBoard.BoardId,
+                ListId = Guid.NewGuid()
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+        
+        [Fact]
+        public async Task CopyList_BoardNotContainList_ReturnsBadRequest()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var dummyBoard1 = await CreateDummyBoard();
+            var dummyBoard2 = await CreateDummyBoard();
+            
+            // Act
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Lists.CopyList, new CopyListRequest
+            {
+                BoardId = dummyBoard1.BoardId,
+                ListId = dummyBoard2.List1Id
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+        
+        [Fact]
         public async Task UpdateList_ValidUpdateInfo_ReturnsOk()
         {
             // Arrange
@@ -129,6 +184,75 @@ namespace Kaban.API.IntegrationTests
             var listResponse = await getListResponse.Content.ReadAsAsync<ListResponse>();
             listResponse.Name.Should().Be("New List 1");
             listResponse.OrderNumber.Should().Be(100);
+        }
+        
+        [Fact]
+        public async Task UpdateList_NullNamePropertyValue_PreviousValueStays()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var dummyBoard = await CreateDummyBoard();
+
+            // Act
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Lists.UpdateList, new UpdateListRequest
+            {
+                ListId = dummyBoard.List1Id,
+                Name = null,
+                OrderNumber = 100
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var getListResponse = await TestClient.GetAsync(ApiRoutes.Lists.GetList
+                .Replace("{boardId}", dummyBoard.BoardId.ToString())
+                .Replace("{listId}", dummyBoard.List1Id.ToString()));
+            getListResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var listResponse = await getListResponse.Content.ReadAsAsync<ListResponse>();
+            listResponse.Name.Should().Be("List 1");
+        }
+        
+        [Fact]
+        public async Task UpdateList_EmptyNamePropertyValue_PreviousValueStays()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var dummyBoard = await CreateDummyBoard();
+
+            // Act
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Lists.UpdateList, new UpdateListRequest
+            {
+                ListId = dummyBoard.List1Id,
+                Name = string.Empty,
+                OrderNumber = 100
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var getListResponse = await TestClient.GetAsync(ApiRoutes.Lists.GetList
+                .Replace("{boardId}", dummyBoard.BoardId.ToString())
+                .Replace("{listId}", dummyBoard.List1Id.ToString()));
+            getListResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var listResponse = await getListResponse.Content.ReadAsAsync<ListResponse>();
+            listResponse.Name.Should().Be("List 1");
+        }
+        
+        [Fact]
+        public async Task UpdateList_NegativeOrderNumber_ReturnsBadRequest()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var dummyBoard = await CreateDummyBoard();
+
+            // Act
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Lists.UpdateList, new UpdateListRequest
+            {
+                ListId = dummyBoard.List1Id,
+                Name = "New List 1",
+                OrderNumber = -100
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
         
         [Fact]
@@ -166,6 +290,32 @@ namespace Kaban.API.IntegrationTests
             var list2Response = await getList2Response.Content.ReadAsAsync<ListResponse>();
             list1Response.OrderNumber.Should().Be(10);
             list2Response.OrderNumber.Should().Be(20);
+        }
+        
+        [Fact]
+        public async Task ReorderLists_NegativeOrderNumber_ReturnsBadRequest()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var dummyBoard = await CreateDummyBoard();
+
+            // Act
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Lists.ReorderLists, new List<ReorderListRequest>
+            {
+                new ReorderListRequest
+                {
+                    ListId = dummyBoard.List1Id,
+                    OrderNumber = -10
+                },
+                new ReorderListRequest
+                {
+                    ListId = dummyBoard.List2Id,
+                    OrderNumber = -20
+                }
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
         
         [Fact]

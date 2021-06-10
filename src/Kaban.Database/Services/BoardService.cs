@@ -82,7 +82,7 @@ namespace Kaban.Database.Services
                                                                       staticFilesContentDir.Length);
 
             boardWallpaperPath = boardWallpaperPath.Replace("\\", "/");
-            boardWallpaperPath = boardWallpaperPath + "?" + DateTime.Now.Ticks;
+            boardWallpaperPath = boardWallpaperPath + "?" + DateTime.UtcNow.Ticks;
 
             return boardWallpaperPath;
         }
@@ -104,7 +104,7 @@ namespace Kaban.Database.Services
                                                                       staticFilesContentDir.Length);
 
             boardWallpaperPreviewPath = boardWallpaperPreviewPath.Replace("\\", "/");
-            boardWallpaperPreviewPath = boardWallpaperPreviewPath + "?" + DateTime.Now.Ticks;
+            boardWallpaperPreviewPath = boardWallpaperPreviewPath + "?" + DateTime.UtcNow.Ticks;
 
             return boardWallpaperPreviewPath;
         }

@@ -43,7 +43,7 @@ namespace Kaban.Database
             
             foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
             {
-                var now = DateTime.Now;
+                var now = DateTime.UtcNow;
                 
                 switch (entry.State)
                 {

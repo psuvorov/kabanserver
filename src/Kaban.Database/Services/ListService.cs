@@ -11,13 +11,15 @@ namespace Kaban.Database.Services
     public class ListService : IListService
     {
         private readonly DataContext _context;
+        private readonly IBoardService _boardService;
         private readonly ICardService _cardService;
         private readonly string _rootPath;
 
-        public ListService(DataContext context, ICardService cardService, IEnvironmentHolder environmentHolder)
+        public ListService(DataContext context, IBoardService boardService, ICardService cardService, IEnvironmentHolder environmentHolder)
         {
             _context = context;
             _cardService = cardService;
+            _boardService = boardService;
             _rootPath = environmentHolder.GetRootPath();
         }
 
@@ -88,7 +90,7 @@ namespace Kaban.Database.Services
             copiedList.Name = list.Name;
             copiedList.OrderNumber = list.OrderNumber;
             copiedList.BoardId = list.BoardId;
-            
+
             _context.Entry(list).Collection(lst => lst.Cards).Load();
             
             foreach (var srcCard in list.Cards)
@@ -116,6 +118,8 @@ namespace Kaban.Database.Services
                 throw new ArgumentNullException(nameof(list));
             if (_context.Lists.SingleOrDefault(x => x.Id == list.Id) is null)
                 throw new Exception("List not found.");
+            if (list.OrderNumber < 0)
+                throw new Exception("Order number should be more than zero.");
             
             _context.Lists.Update(list);
             _context.SaveChanges();
