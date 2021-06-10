@@ -10,37 +10,37 @@ namespace Kaban.API.Controllers
             public const string CreateBoard = Root + "/dashboard/create-board";
         }
         
-        public static class BoardPage
+        public static class Boards
         {
-            public const string GetBoard = Root + "/boardpage/get-board/{boardId}";
-            public const string GetList = Root + "/boardpage/get-list/{boardId}/{listId}";
-            
-            public const string GetBoardDetails = Root + "/boardpage/get-board-details/{boardId}";
-            public const string GetCardDetails = Root + "/boardpage/get-card-details/{boardId}/{cardId}";
-            
-            public const string GetArchivedLists = Root + "/boardpage/get-archived-lists/{boardId}";
-            public const string GetArchivedCards = Root + "/boardpage/get-archived-cards/{boardId}";
-            
-            public const string CreateList = Root + "/boardpage/create-list";
-            public const string CreateCard = Root + "/boardpage/create-card";
-            public const string CreateCardComment = Root + "/boardpage/create-card-comment";
-            
-            public const string CopyList = Root + "/boardpage/copy-list";
-            
-            public const string SetCardCover = Root + "/boardpage/set-card-cover";
-            public const string SetBoardWallpaper = Root + "/boardpage/set-board-wallpaper";
-            
-            public const string UpdateBoardInfo = Root + "/boardpage/update-board-info";
-            public const string UpdateList = Root + "/boardpage/update-list";
-            public const string UpdateCard = Root + "/boardpage/update-card";
-            
-            public const string RenumberLists = Root + "/boardpage/renumber-all-lists";
-            public const string RenumberCards = Root + "/boardpage/renumber-all-cards";
-            
-            public const string DeleteBoard = Root + "/boardpage/delete-board/{boardId}";
-            public const string DeleteList = Root + "/boardpage/delete-list/{listId}";
-            public const string DeleteCard = Root + "/boardpage/delete-card/{cardId}";
-            public const string DeleteCardComment = Root + "/boardpage/delete-card-comment/{cardCommentId}";
+            public const string GetBoard = Root + "/boards/get-board/{boardId}";
+            public const string GetBoardDetails = Root + "/boards/get-board-details/{boardId}";
+            public const string SetBoardWallpaper = Root + "/boards/set-board-wallpaper";
+            public const string UpdateBoardInfo = Root + "/boards/update-board-info";
+            public const string DeleteBoard = Root + "/boards/delete-board/{boardId}";
+        }
+
+        public static class Lists
+        {
+            public const string GetList = Root + "/lists/get-list/{boardId}/{listId}";
+            public const string GetArchivedLists = Root + "/lists/get-archived-lists/{boardId}";
+            public const string CreateList = Root + "/lists/create-list";
+            public const string CopyList = Root + "/lists/copy-list";
+            public const string UpdateList = Root + "/lists/update-list";
+            public const string RenumberLists = Root + "/lists/renumber-all-lists";
+            public const string DeleteList = Root + "/lists/delete-list/{listId}";
+        }
+
+        public static class Cards
+        {
+            public const string GetCardDetails = Root + "/cards/get-card-details/{boardId}/{cardId}";
+            public const string GetArchivedCards = Root + "/cards/get-archived-cards/{boardId}";
+            public const string CreateCard = Root + "/cards/create-card";
+            public const string CreateCardComment = Root + "/cards/create-card-comment";
+            public const string SetCardCover = Root + "/cards/set-card-cover";
+            public const string UpdateCard = Root + "/cards/update-card";
+            public const string RenumberCards = Root + "/cards/renumber-all-cards";
+            public const string DeleteCard = Root + "/cards/delete-card/{cardId}";
+            public const string DeleteCardComment = Root + "/cards/delete-card-comment/{cardCommentId}";
         }
 
         public static class Users
