@@ -51,6 +51,10 @@ namespace Kaban.Database.Services
 
         public IEnumerable<Card> GetArchivedCards(Guid boardId)
         {
+            var board = _context.Boards.Find(boardId);
+            if (board is null)
+                throw new BoardNotExistException("Board not found.");
+            
             var cards = _context.Cards
                 .IgnoreQueryFilters()
                 .Include(x => x.List)

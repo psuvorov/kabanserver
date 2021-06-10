@@ -72,6 +72,19 @@ namespace Kaban.API.IntegrationTests
         }
         
         [Fact]
+        public async Task GetArchivedCards_NonExistingBoardRequested_ReturnsNotFound()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            
+            // Act
+            var response = await TestClient.GetAsync(ApiRoutes.Cards.GetArchivedCards.Replace("{boardId}", Guid.NewGuid().ToString()));
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+        
+        [Fact]
         public async Task CreateCard_CorrectCardData_ReturnsEntityCreatingSuccessResponse()
         {
             // Arrange

@@ -62,6 +62,10 @@ namespace Kaban.Database.Services
 
         public IEnumerable<List> GetArchivedLists(Guid boardId)
         {
+            var board = _context.Boards.Find(boardId);
+            if (board is null)
+                throw new BoardNotExistException("Board not found.");
+            
             var lists = _context.Lists
                 .IgnoreQueryFilters()
                 .Where(x => x.IsArchived && !x.IsDeleted)

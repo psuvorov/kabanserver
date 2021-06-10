@@ -61,10 +61,21 @@ namespace Kaban.API.Controllers
         [HttpGet(ApiRoutes.Lists.GetArchivedLists)]
         public IActionResult GetArchivedLists([FromRoute] Guid boardId)
         {
-            var archivedLists = _listService.GetArchivedLists(boardId);
-            var archivedListDtos = _mapper.Map<IEnumerable<ArchivedListResponse>>(archivedLists);
+            try
+            {
+                var archivedLists = _listService.GetArchivedLists(boardId);
+                var archivedListDtos = _mapper.Map<IEnumerable<ArchivedListResponse>>(archivedLists);
 
-            return Ok(archivedListDtos);
+                return Ok(archivedListDtos);
+            }
+            catch (BoardNotExistException ex)
+            {
+                return NotFound(new OperationFailureResponse { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new OperationFailureResponse { Message = ex.Message });
+            }
         }
         
         [HttpPost(ApiRoutes.Lists.CreateList)]
