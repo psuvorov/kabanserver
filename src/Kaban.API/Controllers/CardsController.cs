@@ -138,19 +138,19 @@ namespace Kaban.API.Controllers
             }
         }
         
-        [HttpPut(ApiRoutes.Cards.RenumberCards)]
-        public IActionResult RenumberCards([FromQuery] Guid boardId, [FromBody] IEnumerable<RenumberCardRequest> renumberedCards)
+        [HttpPut(ApiRoutes.Cards.ReorderCards)]
+        public IActionResult ReorderCards([FromQuery] Guid boardId, [FromBody] IEnumerable<ReorderCardRequest> reorderedCards)
         {
             try
             {
-                foreach (var renumberCardDto in renumberedCards)
+                foreach (var reorderedCardDto in reorderedCards)
                 {
-                    var storedCard = _cardService.Get(renumberCardDto.CardId);
+                    var storedCard = _cardService.Get(reorderedCardDto.CardId);
                     if (storedCard is null)
-                        return BadRequest(new { message = $"Card with '{renumberCardDto.CardId}' id not found." });
+                        return BadRequest(new { message = $"Card with '{reorderedCardDto.CardId}' id not found." });
                     // TODO: add check similar to RenumberAllLists
                     
-                    storedCard.OrderNumber = renumberCardDto.OrderNumber;
+                    storedCard.OrderNumber = reorderedCardDto.OrderNumber;
                     _cardService.Update(storedCard);
                 }
                 return Ok();                

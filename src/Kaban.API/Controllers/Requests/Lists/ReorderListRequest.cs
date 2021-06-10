@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Kaban.API.Controllers.Requests.Lists
 {
-    public class RenumberListRequest
+    public class ReorderListRequest
     {
         [Required]
         public Guid ListId { get; set; }

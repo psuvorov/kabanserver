@@ -129,12 +129,12 @@ namespace Kaban.API.Controllers
             }
         }
         
-        [HttpPut(ApiRoutes.Lists.RenumberLists)]
-        public IActionResult RenumberLists([FromQuery] Guid boardId, [FromBody] IEnumerable<RenumberListRequest> renumberedLists)
+        [HttpPut(ApiRoutes.Lists.ReorderLists)]
+        public IActionResult ReorderLists([FromQuery] Guid boardId, [FromBody] IEnumerable<ReorderListRequest> reorderedLists)
         {
             try
             {
-                foreach (var renumberListDto in renumberedLists)
+                foreach (var renumberListDto in reorderedLists)
                 {
                     var storedList = _listService.Get(renumberListDto.ListId);
                     if (storedList is null)

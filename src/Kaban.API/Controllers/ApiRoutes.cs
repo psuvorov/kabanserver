@@ -26,7 +26,7 @@ namespace Kaban.API.Controllers
             public const string CreateList = Root + "/lists/create-list";
             public const string CopyList = Root + "/lists/copy-list";
             public const string UpdateList = Root + "/lists/update-list";
-            public const string RenumberLists = Root + "/lists/renumber-all-lists";
+            public const string ReorderLists = Root + "/lists/reorder-lists";
             public const string DeleteList = Root + "/lists/delete-list/{listId}";
         }
 
@@ -38,7 +38,7 @@ namespace Kaban.API.Controllers
             public const string CreateCardComment = Root + "/cards/create-card-comment";
             public const string SetCardCover = Root + "/cards/set-card-cover";
             public const string UpdateCard = Root + "/cards/update-card";
-            public const string RenumberCards = Root + "/cards/renumber-all-cards";
+            public const string ReorderCards = Root + "/cards/reorder-cards";
             public const string DeleteCard = Root + "/cards/delete-card/{cardId}";
             public const string DeleteCardComment = Root + "/cards/delete-card-comment/{cardCommentId}";
         }

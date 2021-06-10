@@ -145,21 +145,21 @@ namespace Kaban.API.IntegrationTests
         }
         
         [Fact]
-        public async Task RenumberCards_ValidUpdateInfo_CorrectUpdates()
+        public async Task ReorderCards_ValidUpdateInfo_CorrectUpdates()
         {
             // Arrange
             await AuthenticatedRequest();
             var dummyBoard = await CreateDummyBoard();
 
             // Act
-            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Cards.RenumberCards, new List<RenumberCardRequest>
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Cards.ReorderCards, new List<ReorderCardRequest>
             {
-                new RenumberCardRequest
+                new ReorderCardRequest
                 {
                     CardId = dummyBoard.Card1Id, 
                     OrderNumber = 10
                 },
-                new RenumberCardRequest
+                new ReorderCardRequest
                 {
                     CardId = dummyBoard.Card2Id, 
                     OrderNumber = 20
