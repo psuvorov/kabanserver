@@ -8,11 +8,14 @@ using Kaban.API.Controllers.Responses.CardComments;
 using Kaban.API.Controllers.Responses.Cards;
 using Kaban.Domain.Interfaces;
 using Kaban.Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kaban.API.Controllers
 {
+    [Authorize]
+    [ApiController]
     public class CardsController : ControllerBase
     {
         private readonly ICardService _cardService;
