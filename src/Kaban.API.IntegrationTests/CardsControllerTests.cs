@@ -40,6 +40,22 @@ namespace Kaban.API.IntegrationTests
         }
         
         [Fact]
+        public async Task GetCardDetails_NonExistingBoardRequested_ReturnsNotFound()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var dummyBoard = await CreateDummyBoard();
+
+            // Act
+            var response = await TestClient.GetAsync(ApiRoutes.Cards.GetCardDetails
+                .Replace("{boardId}", dummyBoard.BoardId.ToString())
+                .Replace("{cardId}", Guid.NewGuid().ToString()));
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+        
+        [Fact]
         public async Task GetArchivedCards_CorrectBoardData_ReturnsEmptyArchivedCards()
         {
             // Arrange
@@ -54,8 +70,6 @@ namespace Kaban.API.IntegrationTests
             var archivedCardResponse = await response.Content.ReadAsAsync<IEnumerable<ArchivedCardResponse>>();
             archivedCardResponse.Should().BeEmpty();
         }
-
-        
         
         [Fact]
         public async Task CreateCard_CorrectCardData_ReturnsEntityCreatingSuccessResponse()
@@ -89,6 +103,66 @@ namespace Kaban.API.IntegrationTests
         }
         
         [Fact]
+        public async Task CreateCard_NullCardName_ReturnsBadRequest()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var dummyBoard = await CreateDummyBoard();
+            
+            // Act
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Cards.CreateCard, new CreateCardRequest
+            {
+                ListId = dummyBoard.List1Id,
+                Name = null,
+                Description = "My New Test Card Description",
+                OrderNumber = 100
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+        
+        [Fact]
+        public async Task CreateCard_EmptyCardName_ReturnsBadRequest()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var dummyBoard = await CreateDummyBoard();
+            
+            // Act
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Cards.CreateCard, new CreateCardRequest
+            {
+                ListId = dummyBoard.List1Id,
+                Name = string.Empty,
+                Description = "My New Test Card Description",
+                OrderNumber = 100
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+        
+        [Fact]
+        public async Task CreateCard_NegativeOrderNumber_ReturnsBadRequest()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var dummyBoard = await CreateDummyBoard();
+            
+            // Act
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Cards.CreateCard, new CreateCardRequest
+            {
+                ListId = dummyBoard.List1Id,
+                Name = "My New Test Card",
+                Description = "My New Test Card Description",
+                OrderNumber = -100
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+        
+        [Fact]
         public async Task CreateCardComment_CorrectCardData_ReturnsEntityCreatingSuccessResponse()
         {
             // Arrange
@@ -114,6 +188,42 @@ namespace Kaban.API.IntegrationTests
             cardCommentId.Should().NotBeEmpty();
             cardResponse.Comments.Should().NotBeEmpty();
             cardResponse.Comments.FirstOrDefault(x => x.Id == cardCommentId)?.Text.Should().Be("This is test comment");
+        }
+        
+        [Fact]
+        public async Task CreateCardComment_NullText_ReturnsBadRequest()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var dummyBoard = await CreateDummyBoard();
+            
+            // Act
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Cards.CreateCardComment, new CreateCardCommentRequest
+            {
+                Text = null,
+                CardId = dummyBoard.Card1Id
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+        
+        [Fact]
+        public async Task CreateCardComment_EmptyText_ReturnsBadRequest()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var dummyBoard = await CreateDummyBoard();
+            
+            // Act
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Cards.CreateCardComment, new CreateCardCommentRequest
+            {
+                Text = string.Empty,
+                CardId = dummyBoard.Card1Id
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
         
         [Fact]

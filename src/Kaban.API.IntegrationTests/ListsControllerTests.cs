@@ -35,6 +35,22 @@ namespace Kaban.API.IntegrationTests
         }
         
         [Fact]
+        public async Task GetList_NonExistingListRequested_ReturnsNotFound()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var dummyBoard = await CreateDummyBoard();
+
+            // Act
+            var response = await TestClient.GetAsync(ApiRoutes.Lists.GetList
+                .Replace("{boardId}", dummyBoard.BoardId.ToString())
+                .Replace("{listId}", Guid.NewGuid().ToString()));
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+        
+        [Fact]
         public async Task GetArchivedLists_CorrectBoardData_ReturnsEmptyArchivedLists()
         {
             // Arrange
@@ -79,6 +95,63 @@ namespace Kaban.API.IntegrationTests
         }
         
         [Fact]
+        public async Task CreateList_NullListName_ReturnsBadRequest()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var dummyBoard = await CreateDummyBoard();
+            
+            // Act
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Lists.CreateList, new CreateListRequest
+            {
+                BoardId = dummyBoard.BoardId,
+                Name = null,
+                OrderNumber = 100
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+        
+        [Fact]
+        public async Task CreateList_EmptyListName_ReturnsBadRequest()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var dummyBoard = await CreateDummyBoard();
+            
+            // Act
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Lists.CreateList, new CreateListRequest
+            {
+                BoardId = dummyBoard.BoardId,
+                Name = string.Empty,
+                OrderNumber = 100
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+        
+        [Fact]
+        public async Task CreateList_NegativeOrderNumber_ReturnsBadRequest()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var dummyBoard = await CreateDummyBoard();
+            
+            // Act
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Lists.CreateList, new CreateListRequest
+            {
+                BoardId = dummyBoard.BoardId,
+                Name = "My New Test List",
+                OrderNumber = -100
+            });
+            
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+        
+        [Fact]
         public async Task CopyList_CorrectListData_ReturnsEntityCreatingSuccessResponse()
         {
             // Arrange
@@ -106,7 +179,7 @@ namespace Kaban.API.IntegrationTests
         }
         
         [Fact]
-        public async Task CopyList_NonExistingBoard_ReturnsBadRequest()
+        public async Task CopyList_NonExistingBoard_ReturnsNotFound()
         {
             // Arrange
             await AuthenticatedRequest();
@@ -120,11 +193,11 @@ namespace Kaban.API.IntegrationTests
             });
             
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
         
         [Fact]
-        public async Task CopyList_NonExistingList_ReturnsBadRequest()
+        public async Task CopyList_NonExistingList_ReturnsNotFound()
         {
             // Arrange
             await AuthenticatedRequest();
@@ -138,11 +211,11 @@ namespace Kaban.API.IntegrationTests
             });
             
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
         
         [Fact]
-        public async Task CopyList_BoardNotContainList_ReturnsBadRequest()
+        public async Task CopyList_BoardNotContainList_ReturnsNotFound()
         {
             // Arrange
             await AuthenticatedRequest();
@@ -157,7 +230,7 @@ namespace Kaban.API.IntegrationTests
             });
             
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
         
         [Fact]
@@ -334,7 +407,7 @@ namespace Kaban.API.IntegrationTests
             var getListResponse = await TestClient.GetAsync(ApiRoutes.Lists.GetList
                 .Replace("{boardId}", dummyBoard.BoardId.ToString())
                 .Replace("{listId}", dummyBoard.List1Id.ToString()));
-            getListResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            getListResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
         
         [Fact]

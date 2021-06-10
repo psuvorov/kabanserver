@@ -1,19 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Kaban.API.Controllers;
 using Kaban.API.Controllers.Requests.Boards;
-using Kaban.API.Controllers.Requests.CardComments;
-using Kaban.API.Controllers.Requests.Cards;
-using Kaban.API.Controllers.Requests.Lists;
-using Kaban.API.Controllers.Responses;
 using Kaban.API.Controllers.Responses.Boards;
-using Kaban.API.Controllers.Responses.Cards;
-using Kaban.API.Controllers.Responses.Lists;
 using Xunit;
 
 namespace Kaban.API.IntegrationTests
@@ -39,6 +31,19 @@ namespace Kaban.API.IntegrationTests
         }
         
         [Fact]
+        public async Task GetBoard_NonExistingBoardRequested_ReturnsNotFound()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+
+            // Act
+            var response = await TestClient.GetAsync(ApiRoutes.Boards.GetBoard.Replace("{boardId}", Guid.NewGuid().ToString()));
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        }
+        
+        [Fact]
         public async Task GetBoardDetails_CorrectBoardData_ReturnsBoardDetailsResponse()
         {
             // Arrange
@@ -58,6 +63,19 @@ namespace Kaban.API.IntegrationTests
             boardResponse.Participants.Should().BeEmpty();
             boardResponse.Created.Should().HaveYear(DateTime.UtcNow.Year); // Do not run this test on the New Year day ;)
             boardResponse.LastModified.Should().BeNull();
+        }
+        
+        [Fact]
+        public async Task GetBoardDetails_NonExistingBoardRequested_ReturnsNotFound()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+
+            // Act
+            var response = await TestClient.GetAsync(ApiRoutes.Boards.GetBoardDetails.Replace("{boardId}", Guid.NewGuid().ToString()));
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
         
         [Fact]
@@ -144,7 +162,7 @@ namespace Kaban.API.IntegrationTests
             // Assert
             deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
             var getBoardResponse = await TestClient.GetAsync(ApiRoutes.Boards.GetBoard.Replace("{boardId}", dummyBoard.BoardId.ToString()));
-            getBoardResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            getBoardResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
         
         [Fact]
