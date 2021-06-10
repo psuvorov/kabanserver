@@ -6,6 +6,7 @@ using Kaban.API.Controllers.Requests.Cards;
 using Kaban.API.Controllers.Responses;
 using Kaban.API.Controllers.Responses.CardComments;
 using Kaban.API.Controllers.Responses.Cards;
+using Kaban.Database.Exceptions;
 using Kaban.Domain.Interfaces;
 using Kaban.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -44,11 +45,16 @@ namespace Kaban.API.Controllers
 
                 return Ok(cardDetailsDto);
             }
+            catch (CardNotExistException ex)
+            {
+                return NotFound(new OperationFailureResponse { Message = ex.Message });
+            }
             catch (Exception ex)
             {
                 return BadRequest(new OperationFailureResponse { Message = ex.Message });
             }
         }
+        
         [HttpGet(ApiRoutes.Cards.GetArchivedCards)]
         public IActionResult GetArchivedCards([FromRoute] Guid boardId)
         {
@@ -146,8 +152,6 @@ namespace Kaban.API.Controllers
                 foreach (var reorderedCardDto in reorderedCards)
                 {
                     var storedCard = _cardService.Get(reorderedCardDto.CardId);
-                    if (storedCard is null)
-                        return BadRequest(new { message = $"Card with '{reorderedCardDto.CardId}' id not found." });
                     // TODO: add check similar to RenumberAllLists
                     
                     storedCard.OrderNumber = reorderedCardDto.OrderNumber;

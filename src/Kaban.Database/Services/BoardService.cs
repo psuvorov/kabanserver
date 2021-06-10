@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using Kaban.API.Helpers;
+using Kaban.Database.Exceptions;
 using Kaban.Domain.Interfaces;
 using Kaban.Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -33,7 +34,7 @@ namespace Kaban.Database.Services
         {
             var board = _context.Boards.Find(id);
             if (board is null)
-                throw new Exception("Board not found.");
+                throw new BoardNotExistException("Board not found.");
 
             var lists = _context.Lists.Where(l => l.BoardId == board.Id);
             foreach (var list in lists)
@@ -52,7 +53,7 @@ namespace Kaban.Database.Services
         {
             var board = _context.Boards.Find(id);
             if (board is null)
-                throw new Exception("Board not found.");
+                throw new BoardNotExistException("Board not found.");
 
             return board;
         }
@@ -130,9 +131,7 @@ namespace Kaban.Database.Services
                 throw new ArgumentNullException(nameof(board));
             var storedBoard = _context.Boards.SingleOrDefault(x => x.Id == board.Id);
             if (storedBoard is null)
-                throw new Exception("Board not found.");
-            // if (_context.Boards.Any(b => b.Id != board.Id && b.Name == board.Name && b.CreatedBy.Id == _userService.GetCurrentUser().Id))
-            //     throw new Exception($"Board with '{board.Name}' name already exists.");
+                throw new BoardNotExistException("Board not found.");
             
             _context.Boards.Update(board);
             _context.SaveChanges();

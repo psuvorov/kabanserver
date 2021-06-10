@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Mime;
 using Kaban.API.Helpers;
+using Kaban.Database.Exceptions;
 using Kaban.Domain.Enums;
 using Kaban.Domain.Interfaces;
 using Kaban.Domain.Models;
@@ -43,7 +44,7 @@ namespace Kaban.Database.Services
                 .SingleOrDefault(x => x.Id == id);
             
             if (card is null)
-                throw new Exception($"Card with '{id}' not found.");
+                throw new CardNotExistException($"Card with '{id}' not found.");
 
             return card;
         }
@@ -64,6 +65,8 @@ namespace Kaban.Database.Services
         {
             if (card is null)
                 throw new ArgumentNullException(nameof(card));
+            if (card.OrderNumber < 0)
+                throw new Exception("Order number should be more than zero.");
 
             _context.Cards.Add(card);
             _context.SaveChanges();
@@ -78,7 +81,7 @@ namespace Kaban.Database.Services
 
             var storedCard = _context.Cards.SingleOrDefault(x => x.Id == card.Id);
             if (storedCard is null)
-                throw new Exception("Card not found.");
+                throw new CardNotExistException("Card not found.");
             if (storedCard.OrderNumber < 0)
                 throw new Exception("Order number should be more than zero.");
 

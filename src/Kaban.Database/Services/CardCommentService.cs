@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Kaban.Database.Exceptions;
 using Kaban.Domain.Interfaces;
 using Kaban.Domain.Models;
 
@@ -27,6 +28,8 @@ namespace Kaban.Database.Services
         {
             if (comment is null)
                 throw new ArgumentNullException(nameof(comment));
+            if (string.IsNullOrEmpty(comment.Text))
+                throw new Exception("Comment Text cannot be null or empty.");
                 
             _context.CardComments.Add(comment);
             _context.SaveChanges();
@@ -39,7 +42,7 @@ namespace Kaban.Database.Services
             if (comment is null)
                 throw new ArgumentNullException(nameof(comment));
             if (_context.CardComments.SingleOrDefault(x => x.Id == comment.Id) is null)
-                throw new Exception("Card Comment not found.");
+                throw new CardCommentNotExistException("Card Comment not found.");
             
             _context.CardComments.Update(comment);
             _context.SaveChanges();

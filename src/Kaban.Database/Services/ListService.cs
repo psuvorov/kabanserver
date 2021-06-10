@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Kaban.Database.Exceptions;
 using Kaban.Domain.Interfaces;
 using Kaban.Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -52,7 +53,7 @@ namespace Kaban.Database.Services
                 .SingleOrDefault(x => x.Id == id);
             
             if (list is null)
-                throw new Exception($"List with '{id}' not found.");
+                throw new ListNotExistException($"List with '{id}' not found.");
 
             list.Cards = list.Cards.OrderBy(x => x.OrderNumber).ToList(); 
             
@@ -74,7 +75,11 @@ namespace Kaban.Database.Services
         {
             if (list is null)
                 throw new ArgumentNullException(nameof(list));
-
+            if (string.IsNullOrEmpty(list.Name))
+                throw new Exception("List title cannot be null or empty.");
+            if (list.OrderNumber < 0)
+                throw new Exception("Order number should be more than zero.");
+            
             _context.Lists.Add(list);
             _context.SaveChanges();
 
@@ -117,7 +122,7 @@ namespace Kaban.Database.Services
             if (list is null)
                 throw new ArgumentNullException(nameof(list));
             if (_context.Lists.SingleOrDefault(x => x.Id == list.Id) is null)
-                throw new Exception("List not found.");
+                throw new ListNotExistException("List not found.");
             if (list.OrderNumber < 0)
                 throw new Exception("Order number should be more than zero.");
             

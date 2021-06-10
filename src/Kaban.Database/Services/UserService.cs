@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Kaban.Database.Exceptions;
 using Kaban.Domain.Interfaces;
 using Kaban.Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -93,7 +94,7 @@ namespace Kaban.Database.Services
             if (user is null)
                 throw new ArgumentNullException(nameof(user));
             if (_context.Users.SingleOrDefault(x => x.Id == user.Id) is null)
-                throw new Exception("User not found.");
+                throw new UserNotExistException("User not found.");
             
             if (_context.Users.IgnoreQueryFilters().Any(u => u.Username == user.Username))
                 throw new Exception($"User with username '{user.Username}' already exists.");

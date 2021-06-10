@@ -6,6 +6,7 @@ using Kaban.API.Controllers.Requests.Lists;
 using Kaban.API.Controllers.Responses;
 using Kaban.API.Controllers.Responses.Cards;
 using Kaban.API.Controllers.Responses.Lists;
+using Kaban.Database.Exceptions;
 using Kaban.Domain.Interfaces;
 using Kaban.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -37,7 +38,7 @@ namespace Kaban.API.Controllers
             {
                 var listEntity = _listService.Get(listId);
                 var listDto = _mapper.Map<ListResponse>(listEntity);
-            
+
                 foreach (var cardDto in listDto.Cards)
                 {
                     var cardCoverInfo = _cardService.GetCardCoverInfo(boardId, cardDto.Id);
@@ -46,6 +47,10 @@ namespace Kaban.API.Controllers
                 }
 
                 return Ok(listDto);
+            }
+            catch (ListNotExistException ex)
+            {
+                return NotFound(new OperationFailureResponse { Message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -85,17 +90,25 @@ namespace Kaban.API.Controllers
             try
             {
                 // TODO: Consider moving checks into services to make controller methods thin
-                
+
                 var board = _boardService.Get(request.BoardId);
                 if (board is null)
-                    throw new Exception("Board doesn't exist");
+                    throw new BoardNotExistException("Board doesn't exist");
                 if (board.Lists.FirstOrDefault(x => x.Id == request.ListId) is null)
-                    throw new Exception($"Board doesn't contain a list with '{request.ListId}' Id.");
-                
+                    throw new ListNotExistException($"Board doesn't contain a list with '{request.ListId}' Id.");
+
                 var srcList = _listService.Get(request.ListId);
                 var copiedList = _listService.Copy(srcList);
-                
-                return Ok(new EntityCreatingSuccessResponse { EntityId = copiedList.Id });
+
+                return Ok(new EntityCreatingSuccessResponse {EntityId = copiedList.Id});
+            }
+            catch (BoardNotExistException ex)
+            {
+                return NotFound(new OperationFailureResponse { Message = ex.Message });
+            }
+            catch (ListNotExistException ex)
+            {
+                return NotFound(new OperationFailureResponse { Message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -148,16 +161,16 @@ namespace Kaban.API.Controllers
                 foreach (var renumberListDto in reorderedLists)
                 {
                     var storedList = _listService.Get(renumberListDto.ListId);
-                    if (storedList is null)
-                        return BadRequest(new { message = $"List with '{renumberListDto.ListId}' id not found." });
-                    // if (storedList.Board.Id != boardId)
-                    //     return BadRequest(new { message = $"List with '{renumberListDto.Id}' id doesn't belong to board with '{boardId}'." });
-                    
+
                     storedList.OrderNumber = renumberListDto.OrderNumber;
                     _listService.Update(storedList);
                 }
-                
-                return Ok();                
+
+                return Ok();
+            }
+            catch (ListNotExistException ex)
+            {
+                return NotFound(new OperationFailureResponse { Message = ex.Message });
             }
             catch (Exception ex)
             {

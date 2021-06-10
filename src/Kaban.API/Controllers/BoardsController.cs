@@ -5,6 +5,7 @@ using Kaban.API.Controllers.Requests.Boards;
 using Kaban.API.Controllers.Responses;
 using Kaban.API.Controllers.Responses.Boards;
 using Kaban.API.Controllers.Responses.Cards;
+using Kaban.Database.Exceptions;
 using Kaban.Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -50,6 +51,10 @@ namespace Kaban.API.Controllers
 
                 return Ok(boardDto);
             }
+            catch (BoardNotExistException ex)
+            {
+                return NotFound(new OperationFailureResponse { Message = ex.Message });
+            }
             catch (Exception ex)
             {
                 return BadRequest(new OperationFailureResponse { Message = ex.Message });
@@ -59,29 +64,40 @@ namespace Kaban.API.Controllers
         [HttpGet(ApiRoutes.Boards.GetBoardDetails)]
         public IActionResult GetBoardDetails([FromRoute] Guid boardId)
         {
-            var boardEntity = _boardService.GetInfo(boardId);
-            
-            var boardDetailsDto = new BoardDetailsResponse();
-            boardDetailsDto.Id = boardEntity.Id;
-            boardDetailsDto.Name = boardEntity.Name;
-            boardDetailsDto.Description = boardEntity.Description;
+            try
+            {
+                var boardEntity = _boardService.GetInfo(boardId);
 
-            var author = boardEntity.CreatedBy;
-            var boardUserDto = new BoardUserResponse();
-            boardUserDto.Id = author.Id;
-            boardUserDto.FirstName = author.FirstName;
-            boardUserDto.LastName = author.LastName;
-            boardUserDto.Username = author.Username;
-            boardUserDto.Email = author.Email;
-            boardUserDto.UserPicture = "qwe";
-            boardDetailsDto.Author = boardUserDto;
+                var boardDetailsDto = new BoardDetailsResponse();
+                boardDetailsDto.Id = boardEntity.Id;
+                boardDetailsDto.Name = boardEntity.Name;
+                boardDetailsDto.Description = boardEntity.Description;
 
-            boardDetailsDto.Participants = new HashSet<BoardUserResponse>();
+                var author = boardEntity.CreatedBy;
+                var boardUserDto = new BoardUserResponse();
+                boardUserDto.Id = author.Id;
+                boardUserDto.FirstName = author.FirstName;
+                boardUserDto.LastName = author.LastName;
+                boardUserDto.Username = author.Username;
+                boardUserDto.Email = author.Email;
+                boardUserDto.UserPicture = "qwe";
+                boardDetailsDto.Author = boardUserDto;
 
-            boardDetailsDto.Created = boardEntity.Created;
-            boardDetailsDto.LastModified = boardEntity.LastModified;
+                boardDetailsDto.Participants = new HashSet<BoardUserResponse>();
 
-            return Ok(boardDetailsDto);
+                boardDetailsDto.Created = boardEntity.Created;
+                boardDetailsDto.LastModified = boardEntity.LastModified;
+
+                return Ok(boardDetailsDto);
+            }
+            catch (BoardNotExistException ex)
+            {
+                return NotFound(new OperationFailureResponse {Message = ex.Message});
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new OperationFailureResponse {Message = ex.Message});
+            }
         }
         
         [HttpPost(ApiRoutes.Boards.SetBoardWallpaper)]
