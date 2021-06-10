@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ namespace Kaban.API.IntegrationTests
         public async Task GetList_CorrectBoardData_ReturnsListResponse()
         {
             // Arrange
+            await AuthenticatedRequest();
             var dummyBoard = await CreateDummyBoard();
 
             // Act
@@ -36,6 +38,7 @@ namespace Kaban.API.IntegrationTests
         public async Task GetArchivedLists_CorrectBoardData_ReturnsEmptyArchivedLists()
         {
             // Arrange
+            await AuthenticatedRequest();
             var dummyBoard = await CreateDummyBoard();
             
             // Act
@@ -51,6 +54,7 @@ namespace Kaban.API.IntegrationTests
         public async Task CreateList_CorrectListData_ReturnsEntityCreatingSuccessResponse()
         {
             // Arrange
+            await AuthenticatedRequest();
             var dummyBoard = await CreateDummyBoard();
             
             // Act
@@ -78,6 +82,7 @@ namespace Kaban.API.IntegrationTests
         public async Task CopyList_CorrectListData_ReturnsEntityCreatingSuccessResponse()
         {
             // Arrange
+            await AuthenticatedRequest();
             var dummyBoard = await CreateDummyBoard();
             
             // Act
@@ -104,6 +109,7 @@ namespace Kaban.API.IntegrationTests
         public async Task UpdateList_ValidUpdateInfo_ReturnsOk()
         {
             // Arrange
+            await AuthenticatedRequest();
             var dummyBoard = await CreateDummyBoard();
 
             // Act
@@ -129,6 +135,7 @@ namespace Kaban.API.IntegrationTests
         public async Task RenumberLists_ValidUpdateInfo_CorrectUpdates()
         {
             // Arrange
+            await AuthenticatedRequest();
             var dummyBoard = await CreateDummyBoard();
 
             // Act
@@ -165,6 +172,7 @@ namespace Kaban.API.IntegrationTests
         public async Task DeleteList_ExistingList_DeletedSuccessfully()
         {
             // Arrange
+            await AuthenticatedRequest();
             var dummyBoard = await CreateDummyBoard();
             
             // Act
@@ -177,6 +185,21 @@ namespace Kaban.API.IntegrationTests
                 .Replace("{boardId}", dummyBoard.BoardId.ToString())
                 .Replace("{listId}", dummyBoard.List1Id.ToString()));
             getListResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+        
+        [Fact]
+        public async Task DeleteList_NonExistingList_ReturnsNoContent()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var listId = Guid.NewGuid();
+            
+            // Act
+            var deleteResponse = await TestClient.DeleteAsync(ApiRoutes.Lists.DeleteList
+                .Replace("{listId}", listId.ToString()));
+            
+            // Assert
+            deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
     }
 }

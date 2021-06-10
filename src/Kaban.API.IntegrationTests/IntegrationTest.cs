@@ -73,8 +73,6 @@ namespace Kaban.API.IntegrationTests
 
         protected async Task<DummyBoard> CreateDummyBoard()
         {
-            await AuthenticatedRequest();
-
             var createBoardResponse = await TestClient.PostAsJsonAsync(ApiRoutes.Dashboard.CreateBoard,
                 new CreateBoardRequest
                 {

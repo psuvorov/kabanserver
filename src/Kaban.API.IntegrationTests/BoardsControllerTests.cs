@@ -24,6 +24,7 @@ namespace Kaban.API.IntegrationTests
         public async Task GetBoard_CorrectBoardData_ReturnsFullBoardInformation()
         {
             // Arrange
+            await AuthenticatedRequest();
             var dummyBoard = await CreateDummyBoard();
 
             // Act
@@ -41,6 +42,7 @@ namespace Kaban.API.IntegrationTests
         public async Task GetBoardDetails_CorrectBoardData_ReturnsBoardDetailsResponse()
         {
             // Arrange
+            await AuthenticatedRequest();
             var dummyBoard = await CreateDummyBoard();
 
             // Act
@@ -62,6 +64,7 @@ namespace Kaban.API.IntegrationTests
         public async Task UpdateBoardInfo_ValidUpdateInfo_ReturnsOk()
         {
             // Arrange
+            await AuthenticatedRequest();
             var dummyBoard = await CreateDummyBoard();
 
             // Act
@@ -85,6 +88,7 @@ namespace Kaban.API.IntegrationTests
         public async Task DeleteBoard_ExistingBoard_DeletedSuccessfully()
         {
             // Arrange
+            await AuthenticatedRequest();
             var dummyBoard = await CreateDummyBoard();
             
             // Act
@@ -95,6 +99,21 @@ namespace Kaban.API.IntegrationTests
             deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
             var getBoardResponse = await TestClient.GetAsync(ApiRoutes.Boards.GetBoard.Replace("{boardId}", dummyBoard.BoardId.ToString()));
             getBoardResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+        
+        [Fact]
+        public async Task DeleteBoard_NonExistingBoard_ReturnsNoContent()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var boardId = Guid.NewGuid();
+            
+            // Act
+            var deleteResponse = await TestClient.DeleteAsync(ApiRoutes.Boards.DeleteBoard
+                .Replace("{boardId}", boardId.ToString()));
+            
+            // Assert
+            deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
     }
 }

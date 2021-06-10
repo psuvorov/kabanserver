@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -19,6 +20,7 @@ namespace Kaban.API.IntegrationTests
         public async Task GetCardDetails_CorrectBoardData_ReturnsCardDetailsResponse()
         {
             // Arrange
+            await AuthenticatedRequest();
             var dummyBoard = await CreateDummyBoard();
 
             // Act
@@ -41,6 +43,7 @@ namespace Kaban.API.IntegrationTests
         public async Task GetArchivedCards_CorrectBoardData_ReturnsEmptyArchivedCards()
         {
             // Arrange
+            await AuthenticatedRequest();
             var dummyBoard = await CreateDummyBoard();
             
             // Act
@@ -58,6 +61,7 @@ namespace Kaban.API.IntegrationTests
         public async Task CreateCard_CorrectCardData_ReturnsEntityCreatingSuccessResponse()
         {
             // Arrange
+            await AuthenticatedRequest();
             var dummyBoard = await CreateDummyBoard();
             
             // Act
@@ -88,6 +92,7 @@ namespace Kaban.API.IntegrationTests
         public async Task CreateCardComment_CorrectCardData_ReturnsEntityCreatingSuccessResponse()
         {
             // Arrange
+            await AuthenticatedRequest();
             var dummyBoard = await CreateDummyBoard();
             
             // Act
@@ -115,6 +120,7 @@ namespace Kaban.API.IntegrationTests
         public async Task UpdateCard_ValidUpdateInfo_ReturnsOk()
         {
             // Arrange
+            await AuthenticatedRequest();
             var dummyBoard = await CreateDummyBoard();
 
             // Act
@@ -142,6 +148,7 @@ namespace Kaban.API.IntegrationTests
         public async Task RenumberCards_ValidUpdateInfo_CorrectUpdates()
         {
             // Arrange
+            await AuthenticatedRequest();
             var dummyBoard = await CreateDummyBoard();
 
             // Act
@@ -178,6 +185,7 @@ namespace Kaban.API.IntegrationTests
         public async Task DeleteCard_ExistingCard_DeletedSuccessfully()
         {
             // Arrange
+            await AuthenticatedRequest();
             var dummyBoard = await CreateDummyBoard();
             
             // Act
@@ -193,9 +201,25 @@ namespace Kaban.API.IntegrationTests
         }
         
         [Fact]
+        public async Task DeleteCard_NonExistingCard_ReturnsNoContent()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var cardId = Guid.NewGuid();
+            
+            // Act
+            var deleteResponse = await TestClient.DeleteAsync(ApiRoutes.Cards.DeleteCard
+                .Replace("{cardId}", cardId.ToString()));
+            
+            // Assert
+            deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        }
+        
+        [Fact]
         public async Task DeleteCardComment_ExistingCardComment_DeletedSuccessfully()
         {
             // Arrange
+            await AuthenticatedRequest();
             var dummyBoard = await CreateDummyBoard();
             
             // Act
@@ -209,6 +233,21 @@ namespace Kaban.API.IntegrationTests
                 .Replace("{cardId}", dummyBoard.Card1Id.ToString()));
             var cardDetailsResponse = await getCardDetailsResponse.Content.ReadAsAsync<CardDetailsResponse>();
             cardDetailsResponse.Comments.Should().BeEmpty();
+        }
+        
+        [Fact]
+        public async Task DeleteCardComment_NonExistingCardComment_ReturnsNoContent()
+        {
+            // Arrange
+            await AuthenticatedRequest();
+            var cardCommentId = Guid.NewGuid();
+            
+            // Act
+            var deleteResponse = await TestClient.DeleteAsync(ApiRoutes.Cards.DeleteCardComment
+                .Replace("{cardCommentId}", cardCommentId.ToString()));
+            
+            // Assert
+            deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
         }
     }
 }
