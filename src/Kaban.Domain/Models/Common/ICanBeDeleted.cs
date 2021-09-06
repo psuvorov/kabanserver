@@ -1,6 +1,6 @@
 namespace Kaban.Domain.Models.Common
 {
-    public interface IIsDeleted
+    public interface ICanBeDeleted
     {
         bool IsDeleted { get; set; }
     }

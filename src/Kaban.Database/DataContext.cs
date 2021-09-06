@@ -60,7 +60,7 @@ namespace Kaban.Database
 
             foreach (var entry in ChangeTracker.Entries().Where(x => x.State == EntityState.Deleted))
             {
-                if (entry.Entity is IIsDeleted entity)
+                if (entry.Entity is ICanBeDeleted entity)
                 {
                     entry.State = EntityState.Unchanged;
                     entity.IsDeleted = true;

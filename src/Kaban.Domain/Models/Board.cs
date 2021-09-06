@@ -5,7 +5,7 @@ using Kaban.Domain.Models.Common;
 
 namespace Kaban.Domain.Models
 {
-    public class Board : AuditableEntity, IIsDeleted
+    public class Board : AuditableEntity, ICanBeDeleted
     {
         public Guid Id { get; set; }
         

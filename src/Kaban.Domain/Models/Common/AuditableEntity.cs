@@ -2,7 +2,7 @@ using System;
 
 namespace Kaban.Domain.Models.Common
 {
-    public class AuditableEntity
+    public abstract class AuditableEntity
     {
         public User CreatedBy { get; set; }
         

@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Kaban.API
 {
-    public class Program
+    public static class Program
     {
         public static void Main(string[] args)
         {
@@ -48,11 +48,6 @@ namespace Kaban.API
                     };
 
                     boardService.Create(board1);
-
-
-                    var board = boardService.Get(board1.Id);
-                    var d = 5;
-
                 }
 
             }
@@ -64,7 +59,7 @@ namespace Kaban.API
             host.Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
+        private static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

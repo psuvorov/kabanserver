@@ -3,7 +3,7 @@ using Kaban.Domain.Models.Common;
 
 namespace Kaban.Domain.Models
 {
-    public class CardComment : AuditableEntity, IIsDeleted
+    public class CardComment : AuditableEntity, ICanBeDeleted
     {
         public Guid Id { get; set; }
         

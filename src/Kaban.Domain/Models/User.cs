@@ -3,7 +3,7 @@ using Kaban.Domain.Models.Common;
 
 namespace Kaban.Domain.Models
 {
-    public class User: IIsDeleted
+    public class User: ICanBeDeleted
     {
         public Guid Id { get; set; }
         
