@@ -76,7 +76,7 @@ namespace Kaban.API.Controllers
         }
         
         [HttpPost(ApiRoutes.Cards.CreateCard)]
-        public IActionResult CreateCard([FromBody] CreateCardRequest request)
+        public IActionResult CreateCard([FromRoute] Guid boardId, [FromBody] CreateCardRequest request)
         {
             var card = _mapper.Map<Card>(request);
 
@@ -93,7 +93,7 @@ namespace Kaban.API.Controllers
         }
         
         [HttpPost(ApiRoutes.Cards.CreateCardComment)]
-        public IActionResult CreateCardComment([FromBody] CreateCardCommentRequest request)
+        public IActionResult CreateCardComment([FromRoute] Guid boardId, [FromBody] CreateCardCommentRequest request)
         {
             var cardComment = _mapper.Map<CardComment>(request);
 
@@ -110,7 +110,7 @@ namespace Kaban.API.Controllers
         }
         
         [HttpPost(ApiRoutes.Cards.SetCardCover)]
-        public IActionResult SetCardCover([FromForm(Name = "imageFile")] IFormFile imageFile, [FromQuery] Guid boardId, [FromQuery] Guid cardId)
+        public IActionResult SetCardCover([FromRoute] Guid boardId, [FromRoute] Guid cardId, [FromForm(Name = "imageFile")] IFormFile imageFile)
         {
             try
             {
@@ -127,7 +127,7 @@ namespace Kaban.API.Controllers
         }
         
         [HttpPut(ApiRoutes.Cards.UpdateCard)]
-        public IActionResult UpdateCard([FromBody] UpdateCardRequest request)
+        public IActionResult UpdateCard([FromRoute] Guid boardId, [FromBody] UpdateCardRequest request)
         {
             try
             {
@@ -156,7 +156,7 @@ namespace Kaban.API.Controllers
         }
         
         [HttpPut(ApiRoutes.Cards.ReorderCards)]
-        public IActionResult ReorderCards([FromQuery] Guid boardId, [FromBody] IEnumerable<ReorderCardRequest> reorderedCards)
+        public IActionResult ReorderCards([FromRoute] Guid boardId, [FromBody] IEnumerable<ReorderCardRequest> reorderedCards)
         {
             try
             {
@@ -177,7 +177,7 @@ namespace Kaban.API.Controllers
         }
         
         [HttpDelete(ApiRoutes.Cards.DeleteCard)]
-        public IActionResult DeleteCard([FromRoute] Guid cardId)
+        public IActionResult DeleteCard([FromRoute] Guid boardId, [FromRoute] Guid cardId)
         {
             _cardService.Delete(cardId);
             
@@ -185,7 +185,7 @@ namespace Kaban.API.Controllers
         }
         
         [HttpDelete(ApiRoutes.Cards.DeleteCardComment)]
-        public IActionResult DeleteCardComment([FromRoute] Guid cardCommentId)
+        public IActionResult DeleteCardComment([FromRoute] Guid boardId, [FromRoute] Guid cardCommentId)
         {
             _cardCommentService.Delete(cardCommentId);
             

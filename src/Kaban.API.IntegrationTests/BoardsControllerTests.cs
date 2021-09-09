@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -79,6 +81,60 @@ namespace Kaban.API.IntegrationTests
         }
         
         [Fact]
+        public async Task CreateBoard_CorrectBoardData_ReturnsCreatedBoardData()
+        {
+            // Arrange 
+            await AuthenticatedRequest();
+            
+            // Act
+            await TestClient.PostAsJsonAsync(ApiRoutes.Boards.CreateBoard, new CreateBoardRequest
+            {
+                Name = "Test Board",
+                Description = "Test Board Description"
+            });
+
+            // Assert
+            var getUserBoardsResponse = await TestClient.GetAsync(ApiRoutes.Dashboards.GetUserBoards);
+            getUserBoardsResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+            var boardShortInfoResponses = (await getUserBoardsResponse.Content.ReadAsAsync<IEnumerable<BoardShortInfoResponse>>()).ToList();
+            boardShortInfoResponses.Should().NotBeEmpty();
+            boardShortInfoResponses.FirstOrDefault().Should().NotBeNull();
+            boardShortInfoResponses.FirstOrDefault()?.Name.Should().Be("Test Board");
+        }
+        
+        [Fact]
+        public async Task CreateBoard_EmptyBoardData_ReturnsBadRequest()
+        {
+            // Arrange 
+            await AuthenticatedRequest();
+            
+            // Act
+            var createBoardResponse = await TestClient.PostAsJsonAsync(ApiRoutes.Boards.CreateBoard, new CreateBoardRequest());
+
+            // Assert
+            createBoardResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+        
+        [Fact]
+        public async Task CreateBoard_AttemptToCreateDuplicate_ReturnsBadRequest()
+        {
+            // Arrange 
+            await AuthenticatedRequest();
+            var createBoardRequest = new CreateBoardRequest
+            {
+                Name = "Test Board",
+                Description = "Test Board Description"
+            };
+
+            // Act
+            await TestClient.PostAsJsonAsync(ApiRoutes.Boards.CreateBoard, createBoardRequest);
+            var createBoardResponse = await TestClient.PostAsJsonAsync(ApiRoutes.Boards.CreateBoard, createBoardRequest);
+
+            // Assert
+            createBoardResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        }
+        
+        [Fact]
         public async Task UpdateBoardInfo_ValidUpdateInfo_ReturnsOk()
         {
             // Arrange
@@ -86,7 +142,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
 
             // Act
-            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Boards.UpdateBoardInfo, new UpdateBoardRequest
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Boards.UpdateBoardInfo.Replace("{boardId}", dummyBoard.BoardId.ToString()), new UpdateBoardRequest
             {
                 BoardId = dummyBoard.BoardId,
                 Name = "Test New Board",
@@ -110,7 +166,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
 
             // Act
-            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Boards.UpdateBoardInfo, new UpdateBoardRequest
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Boards.UpdateBoardInfo.Replace("{boardId}", dummyBoard.BoardId.ToString()), new UpdateBoardRequest
             {
                 BoardId = dummyBoard.BoardId,
                 Name = null,
@@ -133,7 +189,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
 
             // Act
-            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Boards.UpdateBoardInfo, new UpdateBoardRequest
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Boards.UpdateBoardInfo.Replace("{boardId}", dummyBoard.BoardId.ToString()), new UpdateBoardRequest
             {
                 BoardId = dummyBoard.BoardId,
                 Name = string.Empty,

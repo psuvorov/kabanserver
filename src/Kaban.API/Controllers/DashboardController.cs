@@ -35,7 +35,7 @@ namespace Kaban.API.Controllers
             _storedUser = storedUser;
         }
         
-        [HttpGet(ApiRoutes.Dashboard.GetUserBoards)]
+        [HttpGet(ApiRoutes.Dashboards.GetUserBoards)]
         public IActionResult GetUserBoards()
         {
             var user = _userService.Get(_storedUser.GetUserId());
@@ -50,23 +50,6 @@ namespace Kaban.API.Controllers
             }
 
             return Ok(boardInfoDtos);
-        }
-        
-        [HttpPost(ApiRoutes.Dashboard.CreateBoard)]
-        public IActionResult CreateBoard([FromBody] CreateBoardRequest request)
-        {
-            var board = _mapper.Map<Board>(request);
-
-            try
-            {
-                var createdBoard = _boardService.Create(board);
-                
-                return Ok(new EntityCreatingSuccessResponse { EntityId = createdBoard.Id});
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new OperationFailureResponse { Message = ex.Message}); 
-            }
         }
     }
 }

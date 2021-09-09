@@ -20,7 +20,7 @@ namespace Kaban.API.IntegrationTests
             await AuthenticatedRequest();
 
             // Act
-            var getUserBoardsResponse = await TestClient.GetAsync(ApiRoutes.Dashboard.GetUserBoards);
+            var getUserBoardsResponse = await TestClient.GetAsync(ApiRoutes.Dashboards.GetUserBoards);
 
             // Assert
             getUserBoardsResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -31,7 +31,7 @@ namespace Kaban.API.IntegrationTests
         public async Task GetUserBoards_NotAuthenticatedRequest_ReturnsUnauthorized()
         {
             // Act
-            var getUserBoardsResponse = await TestClient.GetAsync(ApiRoutes.Dashboard.GetUserBoards);
+            var getUserBoardsResponse = await TestClient.GetAsync(ApiRoutes.Dashboards.GetUserBoards);
 
             // Assert
             getUserBoardsResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -42,14 +42,14 @@ namespace Kaban.API.IntegrationTests
         {
             // Arrange 
             await AuthenticatedRequest();
-            await TestClient.PostAsJsonAsync(ApiRoutes.Dashboard.CreateBoard, new CreateBoardRequest
+            await TestClient.PostAsJsonAsync(ApiRoutes.Boards.CreateBoard, new CreateBoardRequest
             {
                 Name = "Test Board",
                 Description = "Test Board Description"
             });
 
             // Act
-            var getUserBoardsResponse = await TestClient.GetAsync(ApiRoutes.Dashboard.GetUserBoards);
+            var getUserBoardsResponse = await TestClient.GetAsync(ApiRoutes.Dashboards.GetUserBoards);
 
             // Assert
             getUserBoardsResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -57,58 +57,6 @@ namespace Kaban.API.IntegrationTests
                 .NotBeEmpty();
         }
         
-        [Fact]
-        public async Task CreateBoard_CorrectBoardData_ReturnsCreatedBoardData()
-        {
-            // Arrange 
-            await AuthenticatedRequest();
-            
-            // Act
-            await TestClient.PostAsJsonAsync(ApiRoutes.Dashboard.CreateBoard, new CreateBoardRequest
-            {
-                Name = "Test Board",
-                Description = "Test Board Description"
-            });
-
-            // Assert
-            var getUserBoardsResponse = await TestClient.GetAsync(ApiRoutes.Dashboard.GetUserBoards);
-            getUserBoardsResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            var boardShortInfoResponses = (await getUserBoardsResponse.Content.ReadAsAsync<IEnumerable<BoardShortInfoResponse>>()).ToList();
-            boardShortInfoResponses.Should().NotBeEmpty();
-            boardShortInfoResponses.FirstOrDefault().Should().NotBeNull();
-            boardShortInfoResponses.FirstOrDefault()?.Name.Should().Be("Test Board");
-        }
-        
-        [Fact]
-        public async Task CreateBoard_EmptyBoardData_ReturnsBadRequest()
-        {
-            // Arrange 
-            await AuthenticatedRequest();
-            
-            // Act
-            var createBoardResponse = await TestClient.PostAsJsonAsync(ApiRoutes.Dashboard.CreateBoard, new CreateBoardRequest());
-
-            // Assert
-            createBoardResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        }
-        
-        [Fact]
-        public async Task CreateBoard_AttemptToCreateDuplicate_ReturnsBadRequest()
-        {
-            // Arrange 
-            await AuthenticatedRequest();
-            var createBoardRequest = new CreateBoardRequest
-            {
-                Name = "Test Board",
-                Description = "Test Board Description"
-            };
-
-            // Act
-            await TestClient.PostAsJsonAsync(ApiRoutes.Dashboard.CreateBoard, createBoardRequest);
-            var createBoardResponse = await TestClient.PostAsJsonAsync(ApiRoutes.Dashboard.CreateBoard, createBoardRequest);
-
-            // Assert
-            createBoardResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        }
+        // TODO: get-closed-user-boards
     }
 }

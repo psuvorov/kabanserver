@@ -7,6 +7,7 @@ using Kaban.API.Controllers.Responses.Boards;
 using Kaban.API.Controllers.Responses.Cards;
 using Kaban.Database.Exceptions;
 using Kaban.Domain.Interfaces;
+using Kaban.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -80,7 +81,7 @@ namespace Kaban.API.Controllers
                 boardUserDto.LastName = author.LastName;
                 boardUserDto.Username = author.Username;
                 boardUserDto.Email = author.Email;
-                boardUserDto.UserPicture = "qwe";
+                boardUserDto.UserPicture = "qwe"; // TODO: !!
                 boardDetailsDto.Author = boardUserDto;
 
                 boardDetailsDto.Participants = new HashSet<BoardUserResponse>();
@@ -100,8 +101,25 @@ namespace Kaban.API.Controllers
             }
         }
         
+        [HttpPost(ApiRoutes.Boards.CreateBoard)]
+        public IActionResult CreateBoard([FromBody] CreateBoardRequest request)
+        {
+            var board = _mapper.Map<Board>(request);
+
+            try
+            {
+                var createdBoard = _boardService.Create(board);
+                
+                return Ok(new EntityCreatingSuccessResponse { EntityId = createdBoard.Id});
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new OperationFailureResponse { Message = ex.Message}); 
+            }
+        }
+        
         [HttpPost(ApiRoutes.Boards.SetBoardWallpaper)]
-        public IActionResult SetBoardWallpaper([FromForm(Name = "imageFile")] IFormFile imageFile, [FromQuery] Guid boardId)
+        public IActionResult SetBoardWallpaper([FromRoute] Guid boardId, [FromForm(Name = "imageFile")] IFormFile imageFile)
         {
             try
             {
@@ -117,7 +135,7 @@ namespace Kaban.API.Controllers
         }
         
         [HttpPut(ApiRoutes.Boards.UpdateBoardInfo)]
-        public IActionResult UpdateBoardInfo([FromBody] UpdateBoardRequest request)
+        public IActionResult UpdateBoardInfo([FromRoute] Guid boardId, [FromBody] UpdateBoardRequest request)
         {
             try
             {

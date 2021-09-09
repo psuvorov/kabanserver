@@ -79,7 +79,7 @@ namespace Kaban.API.Controllers
         }
         
         [HttpPost(ApiRoutes.Lists.CreateList)]
-        public IActionResult CreateList([FromBody] CreateListRequest request)
+        public IActionResult CreateList([FromRoute] Guid boardId, [FromBody] CreateListRequest request)
         {
             var list = _mapper.Map<List>(request);
 
@@ -96,19 +96,19 @@ namespace Kaban.API.Controllers
         }
         
         [HttpPost(ApiRoutes.Lists.CopyList)]
-        public IActionResult CopyList([FromBody] CopyListRequest request)
+        public IActionResult CopyList([FromRoute] Guid boardId, [FromRoute] Guid listId)
         {
             try
             {
                 // TODO: Consider moving checks into services to make controller methods thin
 
-                var board = _boardService.Get(request.BoardId);
+                var board = _boardService.Get(boardId);
                 if (board is null)
                     throw new BoardNotExistException("Board doesn't exist");
-                if (board.Lists.FirstOrDefault(x => x.Id == request.ListId) is null)
-                    throw new ListNotExistException($"Board doesn't contain a list with '{request.ListId}' Id.");
+                if (board.Lists.FirstOrDefault(x => x.Id == listId) is null)
+                    throw new ListNotExistException($"Board doesn't contain a list with '{listId}' Id.");
 
-                var srcList = _listService.Get(request.ListId);
+                var srcList = _listService.Get(listId);
                 var copiedList = _listService.Copy(srcList);
 
                 return Ok(new EntityCreatingSuccessResponse {EntityId = copiedList.Id});
@@ -128,7 +128,7 @@ namespace Kaban.API.Controllers
         }
         
         [HttpPut(ApiRoutes.Lists.UpdateList)]
-        public IActionResult UpdateList([FromBody] UpdateListRequest request)
+        public IActionResult UpdateList([FromRoute] Guid boardId, [FromBody] UpdateListRequest request)
         {
             try
             {
@@ -165,7 +165,7 @@ namespace Kaban.API.Controllers
         }
         
         [HttpPut(ApiRoutes.Lists.ReorderLists)]
-        public IActionResult ReorderLists([FromQuery] Guid boardId, [FromBody] IEnumerable<ReorderListRequest> reorderedLists)
+        public IActionResult ReorderLists([FromRoute] Guid boardId, [FromBody] IEnumerable<ReorderListRequest> reorderedLists)
         {
             try
             {
@@ -190,7 +190,7 @@ namespace Kaban.API.Controllers
         }
         
         [HttpDelete(ApiRoutes.Lists.DeleteList)]
-        public IActionResult DeleteList([FromRoute] Guid listId)
+        public IActionResult DeleteList([FromRoute] Guid boardId, [FromRoute] Guid listId)
         {
             _listService.Delete(listId);
             

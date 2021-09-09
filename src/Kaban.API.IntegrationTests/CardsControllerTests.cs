@@ -92,7 +92,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
             
             // Act
-            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Cards.CreateCard, new CreateCardRequest
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Cards.CreateCard.Replace("{boardId}", dummyBoard.BoardId.ToString()), new CreateCardRequest
             {
                 ListId = dummyBoard.List1Id,
                 Name = "My New Test Card",
@@ -123,7 +123,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
             
             // Act
-            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Cards.CreateCard, new CreateCardRequest
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Cards.CreateCard.Replace("{boardId}", dummyBoard.BoardId.ToString()), new CreateCardRequest
             {
                 ListId = dummyBoard.List1Id,
                 Name = null,
@@ -143,7 +143,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
             
             // Act
-            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Cards.CreateCard, new CreateCardRequest
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Cards.CreateCard.Replace("{boardId}", dummyBoard.BoardId.ToString()), new CreateCardRequest
             {
                 ListId = dummyBoard.List1Id,
                 Name = string.Empty,
@@ -163,7 +163,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
             
             // Act
-            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Cards.CreateCard, new CreateCardRequest
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Cards.CreateCard.Replace("{boardId}", dummyBoard.BoardId.ToString()), new CreateCardRequest
             {
                 ListId = dummyBoard.List1Id,
                 Name = "My New Test Card",
@@ -183,7 +183,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
             
             // Act
-            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Cards.CreateCardComment, new CreateCardCommentRequest
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Cards.CreateCardComment.Replace("{boardId}", dummyBoard.BoardId.ToString()), new CreateCardCommentRequest
             {
                 Text = "This is test comment",
                 CardId = dummyBoard.Card1Id
@@ -211,7 +211,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
             
             // Act
-            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Cards.CreateCardComment, new CreateCardCommentRequest
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Cards.CreateCardComment.Replace("{boardId}", dummyBoard.BoardId.ToString()), new CreateCardCommentRequest
             {
                 Text = null,
                 CardId = dummyBoard.Card1Id
@@ -229,7 +229,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
             
             // Act
-            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Cards.CreateCardComment, new CreateCardCommentRequest
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Cards.CreateCardComment.Replace("{boardId}", dummyBoard.BoardId.ToString()), new CreateCardCommentRequest
             {
                 Text = string.Empty,
                 CardId = dummyBoard.Card1Id
@@ -247,7 +247,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
 
             // Act
-            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Cards.UpdateCard, new UpdateCardRequest
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Cards.UpdateCard.Replace("{boardId}", dummyBoard.BoardId.ToString()), new UpdateCardRequest
             {
                 CardId = dummyBoard.Card1Id,
                 Name = "New Card 1",
@@ -275,7 +275,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
 
             // Act
-            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Cards.UpdateCard, new UpdateCardRequest
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Cards.UpdateCard.Replace("{boardId}", dummyBoard.BoardId.ToString()), new UpdateCardRequest
             {
                 CardId = dummyBoard.Card1Id,
                 Name = null,
@@ -301,7 +301,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
 
             // Act
-            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Cards.UpdateCard, new UpdateCardRequest
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Cards.UpdateCard.Replace("{boardId}", dummyBoard.BoardId.ToString()), new UpdateCardRequest
             {
                 CardId = dummyBoard.Card1Id,
                 Name = string.Empty,
@@ -327,7 +327,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
 
             // Act
-            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Cards.UpdateCard, new UpdateCardRequest
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Cards.UpdateCard.Replace("{boardId}", dummyBoard.BoardId.ToString()), new UpdateCardRequest
             {
                 CardId = dummyBoard.Card1Id,
                 Name = "New Card 1",
@@ -347,7 +347,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
 
             // Act
-            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Cards.ReorderCards, new List<ReorderCardRequest>
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Cards.ReorderCards.Replace("{boardId}", dummyBoard.BoardId.ToString()), new List<ReorderCardRequest>
             {
                 new ReorderCardRequest
                 {
@@ -384,7 +384,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
 
             // Act
-            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Cards.ReorderCards, new List<ReorderCardRequest>
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Cards.ReorderCards.Replace("{boardId}", dummyBoard.BoardId.ToString()), new List<ReorderCardRequest>
             {
                 new ReorderCardRequest
                 {
@@ -411,6 +411,7 @@ namespace Kaban.API.IntegrationTests
             
             // Act
             var deleteResponse = await TestClient.DeleteAsync(ApiRoutes.Cards.DeleteCard
+                .Replace("{boardId}", dummyBoard.BoardId.ToString())
                 .Replace("{cardId}", dummyBoard.Card1Id.ToString()));
             
             // Assert
@@ -418,7 +419,7 @@ namespace Kaban.API.IntegrationTests
             var getCardDetailsResponse = await TestClient.GetAsync(ApiRoutes.Cards.GetCardDetails
                 .Replace("{boardId}", dummyBoard.BoardId.ToString())
                 .Replace("{cardId}", dummyBoard.Card1Id.ToString()));
-            getCardDetailsResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+            getCardDetailsResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
         
         [Fact]
@@ -426,10 +427,12 @@ namespace Kaban.API.IntegrationTests
         {
             // Arrange
             await AuthenticatedRequest();
+            var dummyBoard = await CreateDummyBoard();
             var cardId = Guid.NewGuid();
             
             // Act
             var deleteResponse = await TestClient.DeleteAsync(ApiRoutes.Cards.DeleteCard
+                .Replace("{boardId}", dummyBoard.BoardId.ToString())
                 .Replace("{cardId}", cardId.ToString()));
             
             // Assert
@@ -445,6 +448,7 @@ namespace Kaban.API.IntegrationTests
             
             // Act
             var deleteResponse = await TestClient.DeleteAsync(ApiRoutes.Cards.DeleteCardComment
+                .Replace("{boardId}", dummyBoard.BoardId.ToString())
                 .Replace("{cardCommentId}", dummyBoard.CardComment1Id.ToString()));
             
             // Assert
@@ -461,10 +465,12 @@ namespace Kaban.API.IntegrationTests
         {
             // Arrange
             await AuthenticatedRequest();
+            var dummyBoard = await CreateDummyBoard();
             var cardCommentId = Guid.NewGuid();
             
             // Act
             var deleteResponse = await TestClient.DeleteAsync(ApiRoutes.Cards.DeleteCardComment
+                .Replace("{boardId}", dummyBoard.BoardId.ToString())
                 .Replace("{cardCommentId}", cardCommentId.ToString()));
             
             // Assert

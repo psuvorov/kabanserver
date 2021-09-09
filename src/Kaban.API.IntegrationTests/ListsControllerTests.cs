@@ -87,7 +87,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
             
             // Act
-            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Lists.CreateList, new CreateListRequest
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Lists.CreateList.Replace("{boardId}", dummyBoard.BoardId.ToString()), new CreateListRequest
             {
                 BoardId = dummyBoard.BoardId,
                 Name = "My New Test List",
@@ -115,7 +115,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
             
             // Act
-            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Lists.CreateList, new CreateListRequest
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Lists.CreateList.Replace("{boardId}", dummyBoard.BoardId.ToString()), new CreateListRequest
             {
                 BoardId = dummyBoard.BoardId,
                 Name = null,
@@ -134,7 +134,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
             
             // Act
-            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Lists.CreateList, new CreateListRequest
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Lists.CreateList.Replace("{boardId}", dummyBoard.BoardId.ToString()), new CreateListRequest
             {
                 BoardId = dummyBoard.BoardId,
                 Name = string.Empty,
@@ -153,7 +153,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
             
             // Act
-            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Lists.CreateList, new CreateListRequest
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Lists.CreateList.Replace("{boardId}", dummyBoard.BoardId.ToString()), new CreateListRequest
             {
                 BoardId = dummyBoard.BoardId,
                 Name = "My New Test List",
@@ -172,11 +172,9 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
             
             // Act
-            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Lists.CopyList, new CopyListRequest
-            {
-                BoardId = dummyBoard.BoardId,
-                ListId = dummyBoard.List1Id
-            });
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Lists.CopyList
+                .Replace("{boardId}", dummyBoard.BoardId.ToString())
+                .Replace("{listId}", dummyBoard.List1Id.ToString()), new {});
             
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -199,11 +197,9 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
             
             // Act
-            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Lists.CopyList, new CopyListRequest
-            {
-                BoardId = Guid.NewGuid(),
-                ListId = dummyBoard.List1Id
-            });
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Lists.CopyList
+                .Replace("{boardId}", Guid.NewGuid().ToString())
+                .Replace("{listId}", dummyBoard.List1Id.ToString()), new {});
             
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -217,11 +213,9 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
             
             // Act
-            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Lists.CopyList, new CopyListRequest
-            {
-                BoardId = dummyBoard.BoardId,
-                ListId = Guid.NewGuid()
-            });
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Lists.CopyList
+                .Replace("{boardId}", dummyBoard.BoardId.ToString())
+                .Replace("{listId}", Guid.NewGuid().ToString()), new {});
             
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -236,11 +230,9 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard2 = await CreateDummyBoard();
             
             // Act
-            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Lists.CopyList, new CopyListRequest
-            {
-                BoardId = dummyBoard1.BoardId,
-                ListId = dummyBoard2.List1Id
-            });
+            var response = await TestClient.PostAsJsonAsync(ApiRoutes.Lists.CopyList
+                .Replace("{boardId}", dummyBoard1.BoardId.ToString())
+                .Replace("{listId}", dummyBoard2.List1Id.ToString()), new {});
             
             // Assert
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -254,7 +246,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
 
             // Act
-            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Lists.UpdateList, new UpdateListRequest
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Lists.UpdateList.Replace("{boardId}", dummyBoard.BoardId.ToString()), new UpdateListRequest
             {
                 ListId = dummyBoard.List1Id,
                 Name = "New List 1",
@@ -280,7 +272,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
 
             // Act
-            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Lists.UpdateList, new UpdateListRequest
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Lists.UpdateList.Replace("{boardId}", dummyBoard.BoardId.ToString()), new UpdateListRequest
             {
                 ListId = dummyBoard.List1Id,
                 Name = null,
@@ -305,7 +297,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
 
             // Act
-            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Lists.UpdateList, new UpdateListRequest
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Lists.UpdateList.Replace("{boardId}", dummyBoard.BoardId.ToString()), new UpdateListRequest
             {
                 ListId = dummyBoard.List1Id,
                 Name = string.Empty,
@@ -330,7 +322,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
 
             // Act
-            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Lists.UpdateList, new UpdateListRequest
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Lists.UpdateList.Replace("{boardId}", dummyBoard.BoardId.ToString()), new UpdateListRequest
             {
                 ListId = dummyBoard.List1Id,
                 Name = "New List 1",
@@ -349,7 +341,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
 
             // Act
-            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Lists.ReorderLists, new List<ReorderListRequest>
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Lists.ReorderLists.Replace("{boardId}", dummyBoard.BoardId.ToString()), new List<ReorderListRequest>
             {
                 new ReorderListRequest
                 {
@@ -386,7 +378,7 @@ namespace Kaban.API.IntegrationTests
             var dummyBoard = await CreateDummyBoard();
 
             // Act
-            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Lists.ReorderLists, new List<ReorderListRequest>
+            var response = await TestClient.PutAsJsonAsync(ApiRoutes.Lists.ReorderLists.Replace("{boardId}", dummyBoard.BoardId.ToString()), new List<ReorderListRequest>
             {
                 new ReorderListRequest
                 {
@@ -413,6 +405,7 @@ namespace Kaban.API.IntegrationTests
             
             // Act
             var deleteResponse = await TestClient.DeleteAsync(ApiRoutes.Lists.DeleteList
+                .Replace("{boardId}", dummyBoard.BoardId.ToString())
                 .Replace("{listId}", dummyBoard.List1Id.ToString()));
             
             // Assert
@@ -428,10 +421,12 @@ namespace Kaban.API.IntegrationTests
         {
             // Arrange
             await AuthenticatedRequest();
+            var dummyBoard = await CreateDummyBoard();
             var listId = Guid.NewGuid();
             
             // Act
             var deleteResponse = await TestClient.DeleteAsync(ApiRoutes.Lists.DeleteList
+                .Replace("{boardId}", dummyBoard.BoardId.ToString())
                 .Replace("{listId}", listId.ToString()));
             
             // Assert
